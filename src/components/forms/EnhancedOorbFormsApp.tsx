@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { LayoutDashboard, BarChart3, Settings, Menu, X, Plus } from 'lucide-react';
-import FormDashboard from './FormDashboard';
+import FormDashboard, { CreateFormDropdown } from './FormDashboard';
 import ResponseViewer from './ResponseViewer';
 import FormCreationModal from './FormCreationModal';
 import Sidebar from './Sidebar';
@@ -227,24 +227,28 @@ const EnhancedGESSIONSFormsApp: React.FC = () => {
         >
           {/* Mobile top bar */}
           {isMobile && (
-            <div className="sticky top-0 z-30 bg-white border-b border-slate-200 flex items-center gap-3 px-4 py-3 shadow-sm">
-              <button
-                onClick={() => setMobileSidebarOpen(true)}
-                className="p-2 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors"
-              >
-                <Menu className="w-5 h-5" />
-              </button>
-              <span className="font-bold text-slate-900 text-[15px]">
-                {currentView === 'dashboard' ? 'Dashboard' : 
-                 currentView === 'my-responses' ? 'Your Responses' : 'Settings'}
-              </span>
-              <button
-                onClick={handleCreateForm}
-                className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white text-sm font-bold rounded-xl shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-                <span>New</span>
-              </button>
+            <div className="sticky top-0 z-30 bg-white border-b border-slate-200 flex items-center justify-between gap-2 px-3 sm:px-4 py-2.5 shadow-xs">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <button
+                  onClick={() => setMobileSidebarOpen(true)}
+                  className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 transition-colors"
+                  aria-label="Toggle menu"
+                >
+                  <Menu className="w-5 h-5" />
+                </button>
+                <span className="font-extrabold text-[#2C2520] text-[15px] truncate">
+                  {currentView === 'dashboard' ? 'Dashboard' : 
+                   currentView === 'my-responses' ? 'Your Responses' : 'Settings'}
+                </span>
+              </div>
+
+              {/* Brown Create Form Dropdown in place of blue button */}
+              <CreateFormDropdown
+                size="compact"
+                onBlank={handleCreateForm}
+                onAI={() => navigate('/ai-chat')}
+                onTemplate={() => setShowTemplateLibrary(true)}
+              />
             </div>
           )}
 

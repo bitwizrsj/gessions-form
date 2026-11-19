@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useId, useState } from "react";
+import React, { useEffect, useId, useState } from "react";
 import { ArrowRight, Menu, X, Zap, Shield, Cpu, Github, Twitter, Linkedin } from "lucide-react";
 import dashboardImg from "@/components/landing/image.png";
 import dashboardFull from "@/asset/dashboard.png";
@@ -615,7 +615,7 @@ Footer.displayName = "Footer";
 // Main Component
 export default function SaasTemplate() {
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white overflow-x-hidden">
       <Navigation />
       <Hero />
       <TrustedBy />

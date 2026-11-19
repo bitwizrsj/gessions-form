@@ -165,11 +165,12 @@ const CtxBtn: React.FC<{ icon: React.FC<any>; label: string; onClick: () => void
 );
 
 /* ── "+ Create form" Dropdown Button ── */
-const CreateFormDropdown: React.FC<{
+export const CreateFormDropdown: React.FC<{
   onBlank: () => void;
   onAI: () => void;
   onTemplate: () => void;
-}> = ({ onBlank, onAI, onTemplate }) => {
+  size?: 'default' | 'compact';
+}> = ({ onBlank, onAI, onTemplate, size = 'default' }) => {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -184,12 +185,14 @@ const CreateFormDropdown: React.FC<{
   }, []);
 
   return (
-    <div ref={ref} className="relative z-20">
+    <div ref={ref} className="relative z-30">
       <button
         onClick={() => setOpen(prev => !prev)}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#5C4A3E] text-white font-bold text-[14px] hover:bg-[#483A30] active:scale-[0.98] transition-all shadow-sm"
+        className={`flex items-center gap-1.5 sm:gap-2 rounded-xl bg-[#5C4A3E] text-white font-bold hover:bg-[#483A30] active:scale-[0.98] transition-all shadow-sm ${
+          size === 'compact' ? 'px-3 py-1.5 text-xs' : 'px-4 py-2.5 text-[14px]'
+        }`}
       >
-        <Plus className="w-4 h-4 text-white" />
+        <Plus className={size === 'compact' ? 'w-3.5 h-3.5 text-white' : 'w-4 h-4 text-white'} />
         <span>Create form</span>
         <ChevronDown className={`w-3.5 h-3.5 text-white/80 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -575,8 +578,8 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
       </div>
 
       {/* ── Top Header Bar ── */}
-      <header className="px-8 py-4 flex items-center justify-between relative z-10">
-        <div className="flex-1 max-w-md">
+      <header className="px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between relative z-10 gap-3">
+        <div className="flex-1 max-w-md hidden sm:block">
           <div className="relative">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
@@ -592,7 +595,7 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 ml-auto">
           <button
             type="button"
             className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-600 hover:bg-white/80 transition-colors relative"
@@ -605,25 +608,25 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
             <div className="w-8 h-8 rounded-full bg-[#5C4A3E] text-white flex items-center justify-center font-bold text-[12px]">
               {getInitials() || 'RS'}
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+            <ChevronDown className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
           </div>
         </div>
       </header>
 
       {/* ── Main View Content ── */}
-      <main className="flex-1 px-8 pb-10 space-y-6 relative z-10 overflow-y-auto">
+      <main className="flex-1 px-4 sm:px-8 pb-10 space-y-6 relative z-10 overflow-y-auto">
         {/* Title & Actions Row */}
-        <div className="flex items-start justify-between gap-4 pt-2">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pt-2">
           <div>
-            <h1 className="text-[36px] font-serif font-black tracking-tight text-[#1A1A1A] leading-tight">
+            <h1 className="text-[28px] sm:text-[36px] font-serif font-black tracking-tight text-[#1A1A1A] leading-tight">
               Forms
             </h1>
-            <p className="text-[14px] text-[#706B63] mt-1">
+            <p className="text-[13px] sm:text-[14px] text-[#706B63] mt-1">
               Create, organize, and manage all your institution's forms in one place.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 pt-1">
+          <div className="hidden sm:flex items-center gap-3 pt-1">
             <CreateFormDropdown
               onBlank={onCreateForm}
               onAI={() => setShowAIBuilder(true)}
@@ -847,8 +850,8 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
           {/* ── Forms Table Column ── */}
           <div className="bg-white border border-[#ECE8E1] rounded-2xl relative">
             {/* Table Toolbar */}
-            <div className="p-4 border-b border-[#ECE8E1] flex flex-wrap items-center justify-between gap-3 rounded-t-2xl">
-              <div className="flex-1 min-w-[240px] max-w-sm relative">
+            <div className="p-3 sm:p-4 border-b border-[#ECE8E1] flex flex-wrap items-center justify-between gap-3 rounded-t-2xl">
+              <div className="flex-1 min-w-full sm:min-w-[200px] max-w-sm relative">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
@@ -859,7 +862,7 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
                 />
               </div>
 
-              <div className="flex items-center gap-2 flex-wrap">
+              <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
                 {/* Department filter */}
                 <button
                   type="button"
@@ -909,159 +912,262 @@ const FormDashboard: React.FC<FormDashboardProps> = ({ onCreateForm, onEditForm,
               </div>
             </div>
 
-            {/* Table Header */}
-            <div className="grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-2.5 bg-[#FAF7F2] border-b border-[#ECE8E1] text-[11px] font-bold text-[#8C8479] uppercase tracking-wider">
-              <div>
-                <input
-                  type="checkbox"
-                  checked={forms.length > 0 && selectedFormIds.length === forms.length}
-                  onChange={toggleSelectAll}
-                  className="rounded border-[#D0C8BC] text-[#5C4A3E] focus:ring-0 cursor-pointer"
-                />
-              </div>
-              <div className="flex items-center gap-1 cursor-pointer">
-                <span>Form name</span>
-                <span>↑</span>
-              </div>
-              <div>Department</div>
-              <div>Status</div>
-              <div>Responses</div>
-              <div className="flex items-center gap-1 cursor-pointer">
-                <span>Updated</span>
-                <span>↓</span>
-              </div>
-              <div />
-            </div>
-
-            {/* Table Rows */}
-            <div className="divide-y divide-[#ECE8E1]">
-              {loading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-3.5 animate-pulse"
-                  >
-                    <div className="w-4 h-4 rounded border border-[#E5DFD5] bg-[#FAF7F2]" />
-                    <div className="flex items-center gap-3 pr-3">
-                      <div className="w-8 h-8 rounded-lg bg-[#ECE8E1] shrink-0" />
-                      <div className="space-y-1.5 flex-1 max-w-[220px]">
-                        <div className="h-3.5 bg-[#ECE8E1] rounded w-4/5" />
-                        <div className="h-2.5 bg-[#ECE8E1] rounded w-3/5" />
-                      </div>
-                    </div>
-                    <div><div className="h-3 bg-[#ECE8E1] rounded w-20" /></div>
-                    <div><div className="h-5 bg-[#ECE8E1] rounded-full w-16" /></div>
-                    <div><div className="h-3 bg-[#ECE8E1] rounded w-10" /></div>
-                    <div><div className="h-3 bg-[#ECE8E1] rounded w-16" /></div>
-                    <div className="w-4 h-4 bg-[#ECE8E1] rounded justify-self-center" />
-                  </div>
-                ))
-              ) : filteredForms.length === 0 ? (
-                <div className="py-16 text-center">
-                  <div className="w-12 h-12 rounded-2xl bg-[#F5EFE6] flex items-center justify-center mx-auto mb-3">
-                    <FileText className="w-6 h-6 text-[#5C4A3E]" />
-                  </div>
-                  <h4 className="font-bold text-[15px] text-[#2C2520] mb-1">No forms found</h4>
-                  <p className="text-[13px] text-slate-400 mb-4 max-w-sm mx-auto">
-                    Try adjusting your search query, or create a new form using the Create form button.
-                  </p>
-                  <button
-                    onClick={onCreateForm}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#5C4A3E] text-white text-[13px] font-bold hover:bg-[#483A30] transition-all"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Create form
-                  </button>
+            {/* ── Empty State ── */}
+            {filteredForms.length === 0 && !loading ? (
+              <div className="py-16 text-center">
+                <div className="w-12 h-12 rounded-2xl bg-[#F5EFE6] flex items-center justify-center mx-auto mb-3">
+                  <FileText className="w-6 h-6 text-[#5C4A3E]" />
                 </div>
-              ) : (
-                paginatedForms.map((form, index) => {
-                  const isChecked = selectedFormIds.includes(form._id);
-                  const isNearBottom = index >= Math.max(0, paginatedForms.length - 2) || paginatedForms.length <= 2;
-                  return (
-                    <div
-                      key={form._id}
-                      draggable
-                      onDragStart={e => {
-                        setDraggedForm(form);
-                        e.dataTransfer.effectAllowed = 'move';
-                      }}
-                      onClick={() => onEditForm(form._id)}
-                      className={`grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-3.5 hover:bg-[#FAF8F5]/80 cursor-pointer transition-colors relative ${
-                        isChecked ? 'bg-[#F5EFE6]/50' : ''
-                      }`}
-                    >
-                      {/* Checkbox */}
-                      <div onClick={e => e.stopPropagation()}>
+                <h4 className="font-bold text-[15px] text-[#2C2520] mb-1">No forms found</h4>
+                <p className="text-[13px] text-slate-400 mb-4 max-w-sm mx-auto">
+                  Try adjusting your search query, or create a new form using the Create form button.
+                </p>
+                <button
+                  onClick={onCreateForm}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#5C4A3E] text-white text-[13px] font-bold hover:bg-[#483A30] transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  Create form
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* ── MOBILE FORM CARDS VIEW (< md) ── */}
+                <div className="md:hidden divide-y divide-[#ECE8E1]">
+                  {loading ? (
+                    Array.from({ length: 4 }).map((_, i) => (
+                      <div key={i} className="p-4 space-y-3 animate-pulse bg-white">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-[#ECE8E1] shrink-0" />
+                          <div className="space-y-1.5 flex-1">
+                            <div className="h-4 bg-[#ECE8E1] rounded w-3/4" />
+                            <div className="h-3 bg-[#ECE8E1] rounded w-1/2" />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <div className="h-4 w-16 bg-[#ECE8E1] rounded-full" />
+                          <div className="h-4 w-20 bg-[#ECE8E1] rounded" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    paginatedForms.map((form) => {
+                      return (
+                        <div
+                          key={form._id}
+                          onClick={() => onEditForm(form._id)}
+                          className="p-4 hover:bg-[#FAF8F5] active:bg-[#F5EFE6] transition-colors cursor-pointer bg-white"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                              <div className="w-10 h-10 rounded-xl bg-[#F5EFE6] border border-[#DDD5C7] flex items-center justify-center shrink-0 mt-0.5">
+                                <FileText className="w-5 h-5 text-[#5C4A3E]" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <h3 className="font-bold text-[14.5px] text-[#2C2520] truncate leading-tight">
+                                  {form.title}
+                                </h3>
+                                {form.description && (
+                                  <p className="text-[12px] text-[#706B63] truncate mt-0.5">
+                                    {form.description}
+                                  </p>
+                                )}
+
+                                <div className="flex items-center gap-2 mt-2 flex-wrap text-[11px] text-[#706B63]">
+                                  <StatusBadge status={form.status} />
+
+                                  {form.department && (
+                                    <>
+                                      <span>•</span>
+                                      <DepartmentBadge department={form.department} />
+                                    </>
+                                  )}
+
+                                  <span>•</span>
+                                  <span className="font-semibold text-slate-700">
+                                    {form.responses || 0} response{form.responses === 1 ? '' : 's'}
+                                  </span>
+
+                                  <span>•</span>
+                                  <span>{timeAgo(form.updatedAt || form.createdAt)}</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex items-center gap-1 shrink-0" onClick={e => e.stopPropagation()}>
+                              {form.shareUrl && form.status === 'published' && (
+                                <button
+                                  type="button"
+                                  onClick={() => copyShareLink(form.shareUrl!)}
+                                  className="p-1.5 text-slate-400 hover:text-[#5C4A3E] rounded-lg transition-colors"
+                                  title="Copy share link"
+                                >
+                                  <LinkIcon size={15} />
+                                </button>
+                              )}
+
+                              <div className="relative">
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveDropdown(p => (p === form._id ? null : form._id))}
+                                  className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                  title="Options"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+                                {renderContextMenu(form, true)}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* ── DESKTOP TABLE VIEW (>= md) ── */}
+                <div className="hidden md:block overflow-x-auto w-full" style={{ scrollbarWidth: 'thin' }}>
+                  <div className="min-w-[680px]">
+                    {/* Table Header */}
+                    <div className="grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-2.5 bg-[#FAF7F2] border-b border-[#ECE8E1] text-[11px] font-bold text-[#8C8479] uppercase tracking-wider">
+                      <div>
                         <input
                           type="checkbox"
-                          checked={isChecked}
-                          onChange={e => toggleSelectForm(form._id, e as any)}
+                          checked={forms.length > 0 && selectedFormIds.length === forms.length}
+                          onChange={toggleSelectAll}
                           className="rounded border-[#D0C8BC] text-[#5C4A3E] focus:ring-0 cursor-pointer"
                         />
                       </div>
-
-                      {/* Title & icon */}
-                      <div className="flex items-center gap-3 min-w-0 pr-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#F5EFE6] flex items-center justify-center flex-shrink-0">
-                          <FileText className="w-4 h-4 text-[#5C4A3E]" />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="font-bold text-[13.5px] text-[#2C2520] truncate">
-                            {form.title}
-                          </div>
-                          <div className="text-[11.5px] text-slate-400 truncate">
-                            {form.description || 'No description provided'}
-                          </div>
-                        </div>
+                      <div className="flex items-center gap-1 cursor-pointer">
+                        <span>Form name</span>
+                        <span>↑</span>
                       </div>
-
-                      {/* Department */}
-                      <div>
-                        <DepartmentBadge department={form.department} />
+                      <div>Department</div>
+                      <div>Status</div>
+                      <div>Responses</div>
+                      <div className="flex items-center gap-1 cursor-pointer">
+                        <span>Updated</span>
+                        <span>↓</span>
                       </div>
-
-                      {/* Status */}
-                      <div>
-                        <StatusBadge status={form.status} />
-                      </div>
-
-                      {/* Responses */}
-                      <div
-                        onClick={e => {
-                          e.stopPropagation();
-                          onViewResponses(form._id);
-                        }}
-                        className="text-[13px] font-semibold text-[#2C2520] hover:text-[#5C4A3E] transition-colors"
-                      >
-                        {form.responses ? form.responses.toLocaleString() : '—'}
-                      </div>
-
-                      {/* Updated */}
-                      <div className="text-[12.5px] text-slate-500">
-                        {timeAgo(form.updatedAt || form.createdAt)}
-                      </div>
-
-                      {/* Actions */}
-                      <div
-                        className="relative flex justify-end"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <button
-                          onClick={e => {
-                            e.stopPropagation();
-                            setActiveDropdown(p => (p === form._id ? null : form._id));
-                          }}
-                          className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
-                        >
-                          <MoreVertical className="w-4 h-4" />
-                        </button>
-                        {renderContextMenu(form, isNearBottom)}
-                      </div>
+                      <div />
                     </div>
-                  );
-                })
-              )}
-            </div>
+
+                    {/* Table Rows */}
+                    <div className="divide-y divide-[#ECE8E1]">
+                      {loading ? (
+                        Array.from({ length: 6 }).map((_, i) => (
+                          <div
+                            key={i}
+                            className="grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-3.5 animate-pulse"
+                          >
+                            <div className="w-4 h-4 rounded border border-[#E5DFD5] bg-[#FAF7F2]" />
+                            <div className="flex items-center gap-3 pr-3">
+                              <div className="w-8 h-8 rounded-lg bg-[#ECE8E1] shrink-0" />
+                              <div className="space-y-1.5 flex-1 max-w-[220px]">
+                                <div className="h-3.5 bg-[#ECE8E1] rounded w-4/5" />
+                                <div className="h-2.5 bg-[#ECE8E1] rounded w-3/5" />
+                              </div>
+                            </div>
+                            <div><div className="h-3 bg-[#ECE8E1] rounded w-20" /></div>
+                            <div><div className="h-5 bg-[#ECE8E1] rounded-full w-16" /></div>
+                            <div><div className="h-3 bg-[#ECE8E1] rounded w-10" /></div>
+                            <div><div className="h-3 bg-[#ECE8E1] rounded w-16" /></div>
+                            <div className="w-4 h-4 bg-[#ECE8E1] rounded justify-self-center" />
+                          </div>
+                        ))
+                      ) : (
+                        paginatedForms.map((form, index) => {
+                          const isChecked = selectedFormIds.includes(form._id);
+                          const isNearBottom = index >= Math.max(0, paginatedForms.length - 2) || paginatedForms.length <= 2;
+                          return (
+                            <div
+                              key={form._id}
+                              draggable
+                              onDragStart={e => {
+                                setDraggedForm(form);
+                                e.dataTransfer.effectAllowed = 'move';
+                              }}
+                              onClick={() => onEditForm(form._id)}
+                              className={`grid grid-cols-[36px_2.4fr_1.2fr_1fr_1fr_1fr_36px] items-center px-4 py-3.5 hover:bg-[#FAF8F5]/80 cursor-pointer transition-colors relative ${
+                                isChecked ? 'bg-[#F5EFE6]/50' : ''
+                              }`}
+                            >
+                              {/* Checkbox */}
+                              <div onClick={e => e.stopPropagation()}>
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={e => toggleSelectForm(form._id, e as any)}
+                                  className="rounded border-[#D0C8BC] text-[#5C4A3E] focus:ring-0 cursor-pointer"
+                                />
+                              </div>
+
+                              {/* Title & icon */}
+                              <div className="flex items-center gap-3 min-w-0 pr-3">
+                                <div className="w-8 h-8 rounded-lg bg-[#F5EFE6] flex items-center justify-center flex-shrink-0">
+                                  <FileText className="w-4 h-4 text-[#5C4A3E]" />
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="font-bold text-[13.5px] text-[#2C2520] truncate">
+                                    {form.title}
+                                  </div>
+                                  <div className="text-[11.5px] text-slate-400 truncate">
+                                    {form.description || 'No description provided'}
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* Department */}
+                              <div>
+                                <DepartmentBadge department={form.department} />
+                              </div>
+
+                              {/* Status */}
+                              <div>
+                                <StatusBadge status={form.status} />
+                              </div>
+
+                              {/* Responses */}
+                              <div
+                                onClick={e => {
+                                  e.stopPropagation();
+                                  onViewResponses(form._id);
+                                }}
+                                className="text-[13px] font-semibold text-[#2C2520] hover:text-[#5C4A3E] transition-colors"
+                              >
+                                {form.responses ? form.responses.toLocaleString() : '—'}
+                              </div>
+
+                              {/* Updated */}
+                              <div className="text-[12.5px] text-slate-500">
+                                {timeAgo(form.updatedAt || form.createdAt)}
+                              </div>
+
+                              {/* Actions */}
+                              <div
+                                className="relative flex justify-end"
+                                onClick={e => e.stopPropagation()}
+                              >
+                                <button
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setActiveDropdown(p => (p === form._id ? null : form._id));
+                                  }}
+                                  className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                                >
+                                  <MoreVertical className="w-4 h-4" />
+                                </button>
+                                {renderContextMenu(form, isNearBottom)}
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
 
             {/* Pagination Footer */}
             {filteredForms.length > 0 && (

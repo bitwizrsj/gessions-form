@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText, Home, LayoutGrid, Layers, Settings, Bell,
-  ChevronDown, ArrowRight, Sparkles, Loader2, BarChart3,
+  ChevronDown, ArrowRight, ArrowLeft, Sparkles, Loader2, BarChart3,
   LogOut, User as UserIcon
 } from 'lucide-react';
 import { formAPI } from '../../services/api';
@@ -257,7 +257,7 @@ const AIChatInterface: React.FC = () => {
       </div>
 
       {/* ── LEFT NAVIGATION SIDEBAR (Unified Shared Sidebar) ── */}
-      <div className="z-20 shrink-0">
+      <div className="hidden lg:block z-20 shrink-0">
         <Sidebar
           currentView="ai-chat"
           onNavigate={(view) => {
@@ -283,11 +283,21 @@ const AIChatInterface: React.FC = () => {
       {/* ── MAIN WORKSPACE CONTENT ── */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
         {/* Top Header Bar */}
-        <header className="h-[68px] px-8 flex items-center justify-end gap-3 shrink-0">
+        <header className="h-[56px] sm:h-[68px] px-4 sm:px-8 flex items-center justify-between shrink-0">
           <button
             type="button"
-            className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/80 transition-colors relative"
+            onClick={() => navigate('/dashboard')}
+            className="lg:hidden flex items-center gap-1.5 text-[13px] font-bold text-[#5C4A3E] hover:text-[#483A30]"
           >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Dashboard</span>
+          </button>
+
+          <div className="flex items-center gap-3 ml-auto">
+            <button
+              type="button"
+              className="w-9 h-9 rounded-xl flex items-center justify-center text-slate-500 hover:bg-white/80 transition-colors relative"
+            >
             <Bell className="w-4 h-4" />
             <span className="w-2 h-2 rounded-full bg-[#5C4A3E] absolute top-2 right-2 ring-2 ring-[#FAF7F2]" />
           </button>

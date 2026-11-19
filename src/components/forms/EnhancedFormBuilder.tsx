@@ -171,6 +171,7 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
   const [activeTab, setActiveTab] = useState<'build' | 'settings' | 'workflows' | 'integrations' | 'analytics'>('build');
   const [paletteTab, setPaletteTab] = useState<'fields' | 'templates'>('fields');
   const [inspectorTab, setInspectorTab] = useState<'properties' | 'settings'>('properties');
+  const [mobileBuilderTab, setMobileBuilderTab] = useState<'canvas' | 'palette' | 'inspector'>('canvas');
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
@@ -289,6 +290,10 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
     }));
     setSelectedFieldId(newId);
     setInspectorTab('properties');
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setMobileBuilderTab('canvas');
+    }
+    toast.success(`Added ${label}`);
   };
 
   /* ── Update Selected Field ── */
@@ -409,41 +414,43 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
   return (
     <div className="flex h-screen bg-[#FAF8F5] text-slate-800 overflow-hidden font-sans">
       {/* ── LEFT-MOST SIDEBAR (Reused clean design) ── */}
-      <Sidebar
-        currentView="forms"
-        onNavigate={(view) => {
-          if (view === 'ai-chat' || view === 'workflows') {
-            navigate('/ai-chat');
-          } else if (view === 'templates') {
-            setShowTemplatesModal(true);
-          } else if (view === 'forms' || view === 'dashboard') {
-            onBack();
-          } else if (onNavigate) {
-            onNavigate(view);
-          } else {
-            navigate('/dashboard', { state: { view } });
-          }
-        }}
-        onCreateForm={() => {}}
-        onEditForm={(id) => {
-          loadForm(id);
-        }}
-      />
+      <div className="hidden lg:block shrink-0">
+        <Sidebar
+          currentView="forms"
+          onNavigate={(view) => {
+            if (view === 'ai-chat' || view === 'workflows') {
+              navigate('/ai-chat');
+            } else if (view === 'templates') {
+              setShowTemplatesModal(true);
+            } else if (view === 'forms' || view === 'dashboard') {
+              onBack();
+            } else if (onNavigate) {
+              onNavigate(view);
+            } else {
+              navigate('/dashboard', { state: { view } });
+            }
+          }}
+          onCreateForm={() => {}}
+          onEditForm={(id) => {
+            loadForm(id);
+          }}
+        />
+      </div>
 
       {/* ── MAIN BUILDER COLUMN ── */}
       <div className="flex-1 flex flex-col h-full min-h-0 min-w-0 overflow-hidden">
         {/* ── TOP HEADER BAR ── */}
-        <header className="h-[60px] px-6 bg-white border-b border-[#ECE8E1] flex items-center justify-between shrink-0">
+        <header className="h-[54px] sm:h-[60px] px-4 sm:px-6 bg-white border-b border-[#ECE8E1] flex items-center justify-between shrink-0">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-[13px] font-bold text-[#4A453F] hover:text-[#E8601C] transition-colors"
+            className="flex items-center gap-1.5 sm:gap-2 text-[12px] sm:text-[13px] font-bold text-[#4A453F] hover:text-[#E8601C] transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Forms</span>
           </button>
 
-          <div className="flex items-center gap-4">
-            <div className="relative w-64">
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="relative w-48 sm:w-64 hidden md:block">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
               <input
                 type="text"
@@ -464,7 +471,7 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
               <div className="w-7 h-7 rounded-full bg-[#302B27] text-white flex items-center justify-center font-bold text-[11px]">
                 {getInitials() || 'RS'}
               </div>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+              <ChevronDown className="w-3.5 h-3.5 text-slate-500 hidden sm:block" />
             </div>
           </div>
         </header>
@@ -474,9 +481,9 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
         ) : (
           <>
             {/* ── SUB-HEADER: FORM TITLE & PUBLISH ACTIONS ── */}
-        <div className="px-6 py-3.5 bg-[#FAF8F5] border-b border-[#ECE8E1] flex flex-wrap items-center justify-between gap-4 shrink-0">
-          <div>
-            <div className="flex items-center gap-2">
+        <div className="px-4 sm:px-6 py-2.5 sm:py-3.5 bg-[#FAF8F5] border-b border-[#ECE8E1] flex flex-wrap items-center justify-between gap-2.5 sm:gap-4 shrink-0">
+          <div className="min-w-0 max-w-full">
+            <div className="flex items-center gap-2 flex-wrap">
               {isEditingTitle ? (
                 <input
                   type="text"
@@ -485,19 +492,19 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
                   onBlur={() => setIsEditingTitle(false)}
                   onKeyDown={e => e.key === 'Enter' && setIsEditingTitle(false)}
                   autoFocus
-                  className="text-[22px] font-serif font-black text-[#1A1A1A] bg-white border border-[#E8601C] rounded-lg px-2 py-0.5 outline-none"
+                  className="text-[17px] sm:text-[22px] font-serif font-black text-[#1A1A1A] bg-white border border-[#E8601C] rounded-lg px-2 py-0.5 outline-none max-w-full"
                 />
               ) : (
                 <h1
                   onClick={() => setIsEditingTitle(true)}
-                  className="text-[22px] font-serif font-black text-[#1A1A1A] cursor-pointer hover:text-[#E8601C] transition-colors flex items-center gap-2"
+                  className="text-[17px] sm:text-[22px] font-serif font-black text-[#1A1A1A] cursor-pointer hover:text-[#E8601C] transition-colors flex items-center gap-2 truncate max-w-[200px] xs:max-w-xs sm:max-w-md"
                 >
-                  <span>{form.title}</span>
-                  <Edit3 className="w-4 h-4 text-slate-400 hover:text-[#E8601C]" />
+                  <span className="truncate">{form.title}</span>
+                  <Edit3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-400 hover:text-[#E8601C] shrink-0" />
                 </h1>
               )}
 
-              <div className={`flex items-center gap-1.5 ml-3 text-[12px] font-medium px-2.5 py-0.5 rounded-full border transition-all ${
+              <div className={`hidden sm:flex items-center gap-1.5 ml-2 text-[11px] sm:text-[12px] font-medium px-2 py-0.5 rounded-full border transition-all ${
                 saveStatus === 'saving'
                   ? 'text-amber-700 bg-amber-50 border-amber-200'
                   : saveStatus === 'unsaved'
@@ -522,24 +529,24 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
                 )}
               </div>
             </div>
-            <p className="text-[12.5px] text-[#706B63] mt-0.5">{form.description}</p>
+            <p className="text-[11.5px] sm:text-[12.5px] text-[#706B63] mt-0.5 truncate max-w-xs sm:max-w-md">{form.description}</p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             {/* Preview Button */}
             <button
               onClick={() => setShowPreview(!showPreview)}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-[#E5DFD5] text-[13px] font-semibold text-[#4A453F] hover:bg-slate-50 transition-colors shadow-2xs"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-white border border-[#E5DFD5] text-[12px] sm:text-[13px] font-semibold text-[#4A453F] hover:bg-slate-50 transition-colors shadow-2xs"
             >
-              <Eye className="w-4 h-4 text-slate-500" />
-              <span>{showPreview ? 'Exit Preview' : 'Preview'}</span>
+              <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+              <span>{showPreview ? 'Exit' : 'Preview'}</span>
             </button>
 
             {/* Save Draft Button */}
             <button
               onClick={handleSaveDraft}
               disabled={saving}
-              className="px-4 py-2 rounded-xl bg-white border border-[#E5DFD5] text-[13px] font-semibold text-[#4A453F] hover:bg-slate-50 transition-colors shadow-2xs"
+              className="px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-xl bg-white border border-[#E5DFD5] text-[12px] sm:text-[13px] font-semibold text-[#4A453F] hover:bg-slate-50 transition-colors shadow-2xs"
             >
               {saving ? 'Saving...' : 'Save Draft'}
             </button>
@@ -548,16 +555,16 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
             <div className="relative">
               <button
                 onClick={() => setPublishMenuOpen(p => !p)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-white text-[13px] font-bold active:scale-[0.98] transition-all shadow-sm ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-white text-[12px] sm:text-[13px] font-bold active:scale-[0.98] transition-all shadow-sm ${
                   form.status === 'closed'
                     ? 'bg-amber-800 hover:bg-amber-900'
                     : 'bg-[#5C4A3E] hover:bg-[#483A30]'
                 }`}
               >
                 {form.status === 'closed' ? (
-                  <Lock className="w-4 h-4" />
+                  <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 ) : (
-                  <Rocket className="w-4 h-4" />
+                  <Rocket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 )}
                 <span>{form.status === 'published' ? 'Published' : form.status === 'closed' ? 'Closed' : 'Publish'}</span>
                 <ChevronDown className="w-3.5 h-3.5 opacity-80" />
@@ -630,7 +637,7 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
         </div>
 
         {/* ── NAVIGATION TABS (Build, Settings, Workflows, Integrations, Analytics) ── */}
-        <div className="px-6 bg-[#FAF7F2] border-b border-[#ECE8E1] flex items-center gap-6 shrink-0">
+        <div className="px-4 sm:px-6 bg-[#FAF7F2] border-b border-[#ECE8E1] flex items-center gap-4 sm:gap-6 shrink-0 overflow-x-auto" style={{ scrollbarWidth: 'none' }}>
           {[
             { id: 'build', label: 'Build', icon: BuildIcon },
             { id: 'settings', label: 'Settings', icon: Settings },
@@ -791,11 +798,24 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
             </div>
           </div>
         ) : activeTab === 'build' ? (
-          <div className="flex-1 flex min-h-0 overflow-hidden">
+          <div className="flex-1 flex flex-col lg:flex-row min-h-0 overflow-hidden relative">
             {/* ════════════════════════════════════════════
                 COLUMN 1: LEFT PALETTE (Add Fields / Templates)
             ════════════════════════════════════════════ */}
-            <div className="w-[280px] min-w-[280px] bg-white border-r border-[#ECE8E1] flex flex-col h-full min-h-0 overflow-hidden">
+            <div className={`w-full lg:w-[280px] lg:min-w-[280px] bg-white border-r border-[#ECE8E1] flex-col h-full min-h-0 overflow-hidden ${
+              mobileBuilderTab === 'palette' ? 'flex' : 'hidden lg:flex'
+            }`}>
+              {/* Mobile Back to Canvas header */}
+              <div className="lg:hidden flex items-center justify-between p-3 bg-[#FAF8F5] border-b border-[#ECE8E1] shrink-0">
+                <span className="font-bold text-[13px] text-[#2C2520]">Add Fields to Form</span>
+                <button
+                  type="button"
+                  onClick={() => setMobileBuilderTab('canvas')}
+                  className="px-3 py-1 bg-white border border-[#E5DFD5] text-[12px] font-bold text-slate-700 rounded-lg hover:bg-slate-50"
+                >
+                  View Canvas
+                </button>
+              </div>
               {/* Palette Tabs */}
               <div className="flex border-b border-[#ECE8E1] px-4 pt-3 gap-4 shrink-0">
                 <button
@@ -908,7 +928,9 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
             {/* ════════════════════════════════════════════
                 COLUMN 2: CENTER CANAVS (Interactive Form)
             ════════════════════════════════════════════ */}
-            <div className="flex-1 h-full min-h-0 overflow-y-auto p-6 md:p-8 bg-[#FAF7F2]">
+            <div className={`flex-1 h-full min-h-0 overflow-y-auto p-3 sm:p-6 md:p-8 bg-[#FAF7F2] ${
+              mobileBuilderTab === 'canvas' ? 'flex flex-col' : 'hidden lg:flex lg:flex-col'
+            }`}>
               <div className="w-full max-w-[620px] mx-auto bg-white rounded-2xl border border-[#ECE8E1] shadow-sm overflow-hidden flex flex-col mb-16">
                 {/* ── Form Header Banner ── */}
                 {form.headerImage ? (
@@ -1053,6 +1075,21 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
                                     <ChevronDown className="w-3.5 h-3.5" />
                                   </button>
                                 )}
+                                <button
+                                  type="button"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setSelectedFieldId(field.id);
+                                    setInspectorTab('properties');
+                                    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                                      setMobileBuilderTab('inspector');
+                                    }
+                                  }}
+                                  title="Field Properties"
+                                  className="p-1 hover:bg-[#F5EFE6] text-slate-600 hover:text-[#5C4A3E] rounded transition-colors"
+                                >
+                                  <Settings className="w-3.5 h-3.5" />
+                                </button>
                                 <button
                                   type="button"
                                   onClick={e => duplicateField(field, e)}
@@ -1209,7 +1246,22 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
             {/* ════════════════════════════════════════════
                 COLUMN 3: RIGHT INSPECTOR (Field Properties / Settings)
             ════════════════════════════════════════════ */}
-            <div className="w-[300px] min-w-[300px] bg-white border-l border-[#ECE8E1] flex flex-col h-full min-h-0 overflow-hidden">
+            <div className={`w-full lg:w-[300px] lg:min-w-[300px] bg-white border-l border-[#ECE8E1] flex-col h-full min-h-0 overflow-hidden ${
+              mobileBuilderTab === 'inspector' ? 'flex' : 'hidden lg:flex'
+            }`}>
+              {/* Mobile Back to Canvas header */}
+              <div className="lg:hidden flex items-center justify-between p-3 bg-[#FAF8F5] border-b border-[#ECE8E1] shrink-0">
+                <span className="font-bold text-[13px] text-[#2C2520]">
+                  {inspectorTab === 'properties' ? 'Field Properties' : 'Form Settings'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setMobileBuilderTab('canvas')}
+                  className="px-3 py-1 bg-white border border-[#E5DFD5] text-[12px] font-bold text-slate-700 rounded-lg hover:bg-slate-50"
+                >
+                  Done
+                </button>
+              </div>
               {/* Inspector Tabs */}
               <div className="flex border-b border-[#ECE8E1] px-4 pt-3 gap-4 shrink-0">
                 <button
@@ -1730,6 +1782,51 @@ const EnhancedFormBuilder: React.FC<EnhancedFormBuilderProps> = ({ formId, onBac
                   {saving ? 'Saving...' : 'Save Settings'}
                 </button>
               </div>
+            </div>
+
+            {/* ── Mobile Builder Bottom Action Bar ── */}
+            <div className="lg:hidden flex items-center justify-around border-t border-[#ECE8E1] bg-white px-2 py-2 shrink-0 z-20 shadow-md">
+              <button
+                type="button"
+                onClick={() => setMobileBuilderTab('palette')}
+                className={`flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-bold transition-colors ${
+                  mobileBuilderTab === 'palette'
+                    ? 'text-[#5C4A3E] bg-[#F5EFE6]'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <Plus className="w-4 h-4 mb-0.5" />
+                <span>+ Add Field</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setMobileBuilderTab('canvas')}
+                className={`flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-bold transition-colors ${
+                  mobileBuilderTab === 'canvas'
+                    ? 'text-[#5C4A3E] bg-[#F5EFE6]'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <FileText className="w-4 h-4 mb-0.5" />
+                <span>Canvas ({form.fields.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileBuilderTab('inspector');
+                  setInspectorTab('properties');
+                }}
+                className={`flex-1 flex flex-col items-center justify-center py-1.5 rounded-xl text-[11px] font-bold transition-colors ${
+                  mobileBuilderTab === 'inspector'
+                    ? 'text-[#5C4A3E] bg-[#F5EFE6]'
+                    : 'text-slate-500 hover:text-slate-900'
+                }`}
+              >
+                <Sliders className="w-4 h-4 mb-0.5" />
+                <span>Properties</span>
+              </button>
             </div>
           </div>
         ) : activeTab === 'integrations' ? (
