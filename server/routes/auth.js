@@ -1,4 +1,4 @@
-﻿import express from 'express';
+import express from 'express';
 import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import { createTransport } from 'nodemailer';
