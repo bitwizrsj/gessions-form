@@ -337,6 +337,7 @@ const AIChatInterface: React.FC = () => {
               </div>
             )}
           </div>
+          </div>
         </header>
 
         {/* Hero Body Content */}
