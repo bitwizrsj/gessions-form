@@ -37,6 +37,8 @@ const BASE_ORIGINS = [
   'http://127.0.0.1:5173',
   'https://forms-by-gessions.vercel.app',
   'https://forms.GESSIONStech.com',
+  'https://forms.gessions.com',
+  'http://forms.gessions.com',
   'https://nb0fzghw-5173.inc1.devtunnels.ms',
   'http://72.62.248.59',
 ];
