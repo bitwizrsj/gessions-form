@@ -6,26 +6,51 @@ import { authenticateToken } from '../middleware/auth.js';
 import { createTransport } from 'nodemailer';
 import multer from 'multer';
 import fs from 'fs';
+import path from 'path';
 import cloudinary from '../services/cloudinary.js';
 import { appendResponseToSheet } from '../services/sheetsService.js';
 
 const router = express.Router();
 
-// Use memory storage with 5MB limit — we'll manually stream to Cloudinary 
+// Allowed file types for form uploads
+const ALLOWED_MIME_TYPES = new Set([
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'image/gif',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/vnd.ms-excel',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'text/csv',
+  'text/plain',
+  'application/zip',
+  'application/x-zip-compressed'
+]);
+
+const BLOCKED_EXTENSIONS = new Set([
+  '.html', '.htm', '.svg', '.exe', '.bat', '.cmd', '.sh', '.php', '.phtml',
+  '.js', '.mjs', '.vbs', '.msi', '.dll', '.com', '.scr', '.ps1'
+]);
+
+// Use memory storage with 5MB limit and strict file validation
 const upload = multer({ 
   storage: multer.memoryStorage(),
   limits: {
     fileSize: 5 * 1024 * 1024 // 5MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    const ext = path.extname(file.originalname || '').toLowerCase();
+    if (BLOCKED_EXTENSIONS.has(ext)) {
+      return cb(new Error(`File type ${ext} is blocked for security reasons.`));
+    }
+    if (!ALLOWED_MIME_TYPES.has(file.mimetype.toLowerCase())) {
+      return cb(new Error(`File format ${file.mimetype} is not supported.`));
+    }
+    cb(null, true);
   }
 });
-
-const logDebug = (msg) => {
-  if (!fs.existsSync('upload-debug.log')) {
-    fs.writeFileSync('upload-debug.log', '');
-  }
-  fs.appendFileSync('upload-debug.log', new Date().toISOString() + ' - ' + msg + '\n');
-  console.log('UPLOAD DEBUG:', msg);
-};
 
 // Email transporter setup
 const transporter = createTransport({
@@ -38,23 +63,19 @@ const transporter = createTransport({
   }
 });
 
-// Upload file endpoint
+// Upload file endpoint with validation
 router.post('/upload', upload.single('file'), async (req, res) => {
   try {
-    logDebug('Upload started for file: ' + (req.file ? req.file.originalname : 'no-file'));
-
     if (!req.file) {
-      logDebug('No file found');
       return res.status(400).json({ error: 'No file uploaded' });
     }
 
-    // Stream buffer to Cloudinary with resource_type: auto so ALL file types work
+    // Stream buffer to Cloudinary with safe settings
     const uploadResult = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         {
           folder: 'form-responses',
           resource_type: 'auto',
-          use_filename: true,
           unique_filename: true,
         },
         (error, result) => {
@@ -65,10 +86,9 @@ router.post('/upload', upload.single('file'), async (req, res) => {
       stream.end(req.file.buffer);
     });
 
-    logDebug('File uploaded to Cloudinary: ' + uploadResult.secure_url);
     res.json({ url: uploadResult.secure_url });
   } catch (error) {
-    logDebug(`Upload error: ${error.message} - ${error.stack}`);
+    console.error('Upload error:', error.message);
     res.status(500).json({ error: 'File upload failed: ' + error.message });
   }
 });
@@ -77,6 +97,10 @@ router.post('/upload', upload.single('file'), async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { formId, responses, submitterInfo, completionTime, userId, isEditable, emailCopyRequested } = req.body;
+
+    if (!formId || typeof formId !== 'string' || !Array.isArray(responses)) {
+      return res.status(400).json({ error: 'Invalid form submission payload' });
+    }
 
     // Verify form exists and is published
     const form = await Form.findById(formId);
@@ -251,7 +275,7 @@ router.post('/', async (req, res) => {
       form.settings?.googleSheets?.spreadsheetId
     ) {
       try {
-        const creator = await User.findById(form.createdBy).select('googleRefreshToken');
+        const creator = await User.findById(form.createdBy).select('+googleRefreshToken');
         if (creator?.googleRefreshToken) {
           await appendResponseToSheet(
             creator.googleRefreshToken,

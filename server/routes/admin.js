@@ -18,18 +18,8 @@ const isAdmin = async (req, res, next) => {
   }
 };
 
-router.post('/make-me-admin', authenticateToken, async (req, res) => {
-  try {
-    const user = await User.findByIdAndUpdate(
-      req.user._id,
-      { role: 'admin' },
-      { new: true }
-    );
-    res.json({ message: 'Success! You are now a Super Admin.', user });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
+// Note: Admin privilege elevation endpoint removed for production security.
+// Admin users must be provisioned via database seed or environment configuration.
 
 router.get('/analytics', authenticateToken, isAdmin, async (req, res) => {
   try {

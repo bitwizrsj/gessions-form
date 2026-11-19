@@ -4,14 +4,14 @@ import bcrypt from 'bcryptjs';
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
+  password: { type: String, required: true, select: false },
   avatar: { type: String, default: null }, // URL to profile picture
   role: { type: String, enum: ['user', 'admin'], default: 'user' },
   isActive: { type: Boolean, default: true },
   lastLogin: { type: Date, default: null },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
-  googleRefreshToken: { type: String, default: null },
+  googleRefreshToken: { type: String, default: null, select: false },
 
   // User preferences
   preferences: {
@@ -22,8 +22,8 @@ const userSchema = new mongoose.Schema({
 
   // Verification
   isVerified: { type: Boolean, default: false },
-  otp: { type: String, default: null },
-  otpExpires: { type: Date, default: null }
+  otp: { type: String, default: null, select: false },
+  otpExpires: { type: Date, default: null, select: false }
 });
 
 // Hash password before saving

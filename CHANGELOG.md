@@ -488,3 +488,20 @@
   - **[FormAnalytics.tsx](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/src/components/forms/FormAnalytics.tsx)**: Added missing `import toast from 'react-hot-toast'`.
   - **[IntegrationsPanel.tsx](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/src/components/forms/IntegrationsPanel.tsx)**: Marked `onClose?: () => void` as optional for flexible standalone usage.
   - Build successfully completed in 11.01s producing optimized output in `dist/`.
+
+---
+
+### 25. Security Hardening & Full Production Readiness Overhaul
+- **What was changed**: Conducted a comprehensive security audit and remediated critical vulnerabilities across privilege management, file uploads, rate limiting, and NoSQL injection.
+- **How it was earlier**:
+  - `POST /api/admin/make-me-admin` existed in `server/routes/admin.js`, allowing any registered user to arbitrarily escalate their privileges to Super Admin.
+  - File upload endpoint `/api/responses/upload` accepted all file types with `resource_type: 'auto'` and had no MIME or extension whitelist.
+  - Express server lacked security headers (`X-Content-Type-Options`, `X-Frame-Options`, `HSTS`, `X-XSS-Protection`) and rate limiting on sensitive routes.
+  - User model exposed `password`, `otp`, `otpExpires`, and `googleRefreshToken` in default projections.
+  - Auth routes did not validate primitive string types for `email` and `password`, opening vectors for NoSQL operator injection.
+- **What is updated**:
+  - **[admin.js](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/server/routes/admin.js)**: Permanently removed `/api/admin/make-me-admin` privilege escalation backdoor.
+  - **[responses.js](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/server/routes/responses.js)**: Configured strict `multer` `fileFilter` rejecting `.html`, `.svg`, `.exe`, `.js`, `.sh`, `.php`, and unapproved MIME types; removed synchronous disk file logging.
+  - **[server.js](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/server/server.js)**: Disabled `X-Powered-By`, added standard security headers, applied rate limiters on `/api/auth` (20 req/15 min) and `/api/responses` (30 req/min), and added a production-safe centralized error handler.
+  - **[User.js](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/server/models/User.js)**: Added `select: false` to `password`, `otp`, `otpExpires`, and `googleRefreshToken` to prevent accidental credential leakage in queries.
+  - **[auth.js](file:///c:/Users/Hp/Downloads/oorb-forms-2-main/oorb-forms-2-main/server/routes/auth.js)**: Added strict string type enforcement and email normalization to prevent NoSQL operator injection. Added password length enforcement (minimum 8 characters).

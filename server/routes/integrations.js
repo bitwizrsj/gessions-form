@@ -65,7 +65,7 @@ router.get('/google/callback', async (req, res) => {
 // Check integration status
 router.get('/google/status', auth, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select('+googleRefreshToken');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -120,7 +120,7 @@ router.post('/google-sheets/create', auth, async (req, res) => {
   try {
     const { formId, title } = req.body;
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select('+googleRefreshToken');
     if (!user?.googleRefreshToken) {
       return res.status(400).json({ error: 'Google account not connected. Please connect Google Drive first.' });
     }

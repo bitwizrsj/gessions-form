@@ -38,8 +38,12 @@ router.post('/register', async (req, res) => {
 
     console.log('OTP Request/Registration attempt:', { name, email });
 
-    if (!name || !email || !password) {
-      return res.status(400).json({ error: 'All fields are required' });
+    if (!name || !email || !password || typeof name !== 'string' || typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'All fields are required and must be valid strings' });
+    }
+
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
 
     // Check if user already exists
@@ -111,7 +115,7 @@ router.post('/verify-otp', async (req, res) => {
   try {
     const { email, otp } = req.body;
 
-    if (!email || !otp) {
+    if (!email || !otp || typeof email !== 'string' || typeof otp !== 'string') {
       return res.status(400).json({ error: 'Email and OTP are required' });
     }
 
@@ -119,7 +123,7 @@ router.post('/verify-otp', async (req, res) => {
       email: email.toLowerCase().trim(),
       otp,
       otpExpires: { $gt: Date.now() }
-    });
+    }).select('+otp +otpExpires');
 
     if (!user) {
       return res.status(400).json({ error: 'Invalid or expired OTP' });
@@ -166,13 +170,15 @@ router.post('/login', async (req, res) => {
 
     console.log('Login attempt:', { email });
 
-    // Validate input
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+    // Validate input types & format (prevents NoSQL object injection)
+    if (!email || !password || typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ error: 'Valid email and password are required' });
     }
 
-    // Find user by email
-    const user = await User.findOne({ email });
+    const cleanEmail = email.toLowerCase().trim();
+
+    // Find user by normalized email (include password for comparison)
+    const user = await User.findOne({ email: cleanEmail }).select('+password');
     if (!user) {
       console.log('Login attempt failed: User not found:', email);
       return res.status(401).json({ error: 'Invalid email or password' });
@@ -279,11 +285,11 @@ router.put('/change-password', authenticateToken, async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
 
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({ error: 'Both current and new passwords are required' });
+    if (!currentPassword || !newPassword || typeof newPassword !== 'string' || newPassword.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters long' });
     }
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).select('+password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
