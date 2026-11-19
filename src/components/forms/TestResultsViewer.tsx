@@ -81,64 +81,64 @@ const TestResultsViewer: React.FC<TestResultsViewerProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-sm shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <div className="p-6 border-b border-gray-200">
+    <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
+        <div className="p-6 border-b border-[#EDE5D8] bg-[#FAF7F2]">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-sm flex items-center justify-center">
-                <Award className="w-5 h-5 text-blue-600" />
+              <div className="w-10 h-10 bg-[#F5EFE6] rounded-xl flex items-center justify-center text-[#5C4A3E]">
+                <Award className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-gray-900">Test Results</h2>
-                <p className="text-gray-600">{form?.title}</p>
+                <h2 className="text-xl font-bold text-[#2C2520]">Test Results</h2>
+                <p className="text-xs text-[#786E64] font-medium mt-0.5">{form?.title}</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600"
+              className="p-2 hover:bg-[#F5EFE6] rounded-xl text-slate-400 hover:text-slate-600 transition-colors"
             >
               ✕
             </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1 bg-white">
           {/* Overall Score */}
-          <div className="bg-gray-50 rounded-sm p-6 mb-6">
+          <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-6 mb-6">
             <div className="text-center">
-              <div className={`text-4xl font-bold mb-2 ${getScoreColor(overallScore)}`}>
+              <div className={`text-4xl font-black mb-2 ${getScoreColor(overallScore)}`}>
                 {Math.round(overallScore)}%
               </div>
-              <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${getScoreBadgeColor(overallScore)}`}>
+              <div className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${getScoreBadgeColor(overallScore)}`}>
                 {overallScore >= 80 ? 'Excellent' : overallScore >= 60 ? 'Good' : 'Needs Improvement'}
               </div>
-              <div className="mt-4 text-sm text-gray-600">
+              <div className="mt-3 text-xs font-semibold text-slate-500">
                 {testResults.filter(r => r.isCorrect).length} out of {testResults.length} questions correct
               </div>
             </div>
           </div>
 
           {/* Question Results */}
-          <div className="space-y-6">
+          <div className="space-y-4">
             {testResults.map((result, index) => (
-              <div key={result.questionId} className="border border-gray-200 rounded-sm p-4">
+              <div key={result.questionId} className="border border-[#E5DFD5] rounded-xl p-5 bg-[#FAF7F2]">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 mb-2">
+                    <h3 className="font-bold text-[#2C2520] text-sm mb-1">
                       Question {index + 1}: {result.questionText}
                     </h3>
                   </div>
                   <div className="flex items-center space-x-2">
                     {result.isCorrect ? (
-                      <div className="flex items-center space-x-1 text-green-600">
-                        <CheckCircle className="w-5 h-5" />
-                        <span className="text-sm font-medium">Correct</span>
+                      <div className="flex items-center space-x-1 text-emerald-600">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="text-xs font-bold">Correct</span>
                       </div>
                     ) : (
-                      <div className="flex items-center space-x-1 text-red-600">
-                        <XCircle className="w-5 h-5" />
-                        <span className="text-sm font-medium">Incorrect</span>
+                      <div className="flex items-center space-x-1 text-rose-600">
+                        <XCircle className="w-4 h-4" />
+                        <span className="text-xs font-bold">Incorrect</span>
                       </div>
                     )}
                   </div>
@@ -149,16 +149,16 @@ const TestResultsViewer: React.FC<TestResultsViewerProps> = ({
                     const isUserSelected = result.userAnswers.includes(option.id);
                     const isCorrectAnswer = option.isCorrect;
                     
-                    let optionClass = 'p-3 border rounded-md ';
+                    let optionClass = 'p-3 border rounded-xl text-xs font-medium ';
                     
                     if (isCorrectAnswer && isUserSelected) {
-                      optionClass += 'bg-green-50 border-green-200 text-green-900';
+                      optionClass += 'bg-emerald-50 border-emerald-300 text-emerald-900';
                     } else if (isCorrectAnswer) {
-                      optionClass += 'bg-green-50 border-green-200 text-green-900';
+                      optionClass += 'bg-emerald-50 border-emerald-300 text-emerald-900';
                     } else if (isUserSelected) {
-                      optionClass += 'bg-red-50 border-red-200 text-red-900';
+                      optionClass += 'bg-rose-50 border-rose-300 text-rose-900';
                     } else {
-                      optionClass += 'bg-gray-50 border-gray-200 text-gray-700';
+                      optionClass += 'bg-white border-[#E5DFD5] text-slate-700';
                     }
 
                     return (
@@ -167,12 +167,12 @@ const TestResultsViewer: React.FC<TestResultsViewerProps> = ({
                           <span>{option.text}</span>
                           <div className="flex items-center space-x-2">
                             {isUserSelected && (
-                              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                              <span className="text-[10px] bg-[#F5EFE6] text-[#5C4A3E] px-2 py-0.5 rounded-full font-bold">
                                 Your Answer
                               </span>
                             )}
                             {isCorrectAnswer && (
-                              <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                              <span className="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
                                 Correct
                               </span>
                             )}
@@ -187,26 +187,26 @@ const TestResultsViewer: React.FC<TestResultsViewerProps> = ({
           </div>
 
           {/* Summary Stats */}
-          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-blue-50 rounded-sm p-4 text-center">
-              <div className="text-2xl font-bold text-blue-600">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-2xl p-4 text-center">
+              <div className="text-2xl font-black text-emerald-600">
                 {testResults.filter(r => r.isCorrect).length}
               </div>
-              <div className="text-sm text-blue-800">Correct Answers</div>
+              <div className="text-xs font-bold text-slate-500 mt-1">Correct Answers</div>
             </div>
             
-            <div className="bg-red-50 rounded-sm p-4 text-center">
-              <div className="text-2xl font-bold text-red-600">
+            <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-2xl p-4 text-center">
+              <div className="text-2xl font-black text-rose-600">
                 {testResults.filter(r => !r.isCorrect).length}
               </div>
-              <div className="text-sm text-red-800">Incorrect Answers</div>
+              <div className="text-xs font-bold text-slate-500 mt-1">Incorrect Answers</div>
             </div>
             
-            <div className="bg-gray-50 rounded-sm p-4 text-center">
-              <div className="text-2xl font-bold text-gray-600">
+            <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-2xl p-4 text-center">
+              <div className="text-2xl font-black text-[#2C2520]">
                 {testResults.length}
               </div>
-              <div className="text-sm text-gray-800">Total Questions</div>
+              <div className="text-xs font-bold text-slate-500 mt-1">Total Questions</div>
             </div>
           </div>
         </div>

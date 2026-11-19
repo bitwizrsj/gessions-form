@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import multer from 'multer';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import cloudinary from '../services/cloudinary.js';
@@ -9,7 +9,7 @@ const router = express.Router();
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'oorb-forms',
+    folder: 'forms-by-gessions',
     allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'],
     transformation: [{ width: 1200, height: 400, crop: 'limit' }],
   },

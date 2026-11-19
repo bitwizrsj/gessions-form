@@ -1,4 +1,4 @@
-import React, { useEffect, useId, useState } from "react";
+﻿import React, { useEffect, useId, useState } from "react";
 import { ArrowRight, Menu, X, Zap, Shield, Cpu, Github, Twitter, Linkedin } from "lucide-react";
 import dashboardImg from "@/components/landing/image.png";
 import dashboardFull from "@/asset/dashboard.png";
@@ -60,7 +60,7 @@ const Navigation = React.memo(() => {
     <header className="fixed top-0 w-full z-50 border-b border-gray-800/50 bg-black/80 backdrop-blur-md">
       <nav className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="text-xl font-semibold text-white">Oorb Forms</Link>
+          <Link to="/" className="text-xl font-semibold text-white">Forms by Gessions</Link>
 
           <div className="hidden md:flex items-center justify-center gap-8 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {navLinks.map((link) => (
@@ -183,7 +183,7 @@ const Hero = React.memo(() => {
 
       <aside className="mb-8 inline-flex flex-wrap items-center justify-center gap-2 px-4 py-2 rounded-full border border-gray-700 bg-gray-800/50 backdrop-blur-sm max-w-full">
         <span className="text-xs text-center whitespace-nowrap" style={{ color: "#9ca3af" }}>
-          New version of Oorb Forms is out!
+          New version of Forms by Gessions is out!
         </span>
         <a
           href="#new-version"
@@ -225,7 +225,7 @@ const Hero = React.memo(() => {
             variant="gradient"
             size="lg"
             className="rounded-lg flex items-center justify-center px-10"
-            aria-label="Get started with Oorb Forms"
+            aria-label="Get started with Forms by Gessions"
           >
             Get started
           </Button>
@@ -317,10 +317,10 @@ const Features = React.memo(() => {
               Built for modern teams
             </h2>
             <p className="text-gray-400 text-sm md:text-base leading-relaxed font-normal mb-8 max-w-xl" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              Oorb Forms is an advanced, AI-driven data collection platform meticulously engineered to
+              Forms by Gessions is an advanced, AI-driven data collection platform meticulously engineered to
               empower modern teams with unprecedented speed and precision. By leveraging cutting-edge
               natural language processing, our system allows you to transform complex ideas into fully
-              functional, high-performance forms in a matter of seconds. Beyond simple data entry, Oorb
+              functional, high-performance forms in a matter of seconds. Beyond simple data entry, GESSIONS
               provides a sophisticated suite of tools for intelligent branching logic, real-time
               collaboration, and seamless enterprise integrations.
             </p>
@@ -555,7 +555,7 @@ const Footer = React.memo(() => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-2 md:col-span-1">
-            <h3 className="text-xl font-semibold text-white mb-6">Oorb Forms</h3>
+            <h3 className="text-xl font-semibold text-white mb-6">Forms by Gessions</h3>
             <p className="text-gray-400 text-sm leading-relaxed mb-6" style={{ fontFamily: "'Poppins', sans-serif" }}>
               The next-generation AI form builder for modern teams. Build, automate, and scale with ease.
             </p>
@@ -572,7 +572,7 @@ const Footer = React.memo(() => {
               <li><a href="#features" className="hover:text-white transition-colors">Features</a></li>
               <li><a href="#pricing" className="hover:text-white transition-colors">Pricing</a></li>
               <li><Link to="/ai-chat" className="hover:text-white transition-colors">AI Creator</Link></li>
-              <li><Link to="/oorb-forms" className="hover:text-white transition-colors">Dashboard</Link></li>
+              <li><Link to="/forms-by-gessions" className="hover:text-white transition-colors">Dashboard</Link></li>
             </ul>
           </div>
 
@@ -598,7 +598,7 @@ const Footer = React.memo(() => {
 
         <div className="pt-8 border-t border-gray-800/50 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-500" style={{ fontFamily: "'Poppins', sans-serif" }}>
-            © 2026 Oorb Forms. All rights reserved.
+            © 2026 Forms by Gessions. All rights reserved.
           </p>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />

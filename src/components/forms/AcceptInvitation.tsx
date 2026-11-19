@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Loader2, CheckCircle2, AlertCircle, ArrowRight, ShieldCheck } from 'lucide-react';
 import { collabAPI } from '../../services/api';
@@ -25,7 +25,7 @@ const AcceptInvitation: React.FC = () => {
       
       // Auto redirect after 2 seconds
       setTimeout(() => {
-        navigate('/oorb-forms');
+        navigate('/forms-by-gessions');
       }, 2000);
     } catch (error: any) {
       console.error('Accept Invitation Error:', error);
@@ -59,7 +59,7 @@ const AcceptInvitation: React.FC = () => {
               Success! You are now a collaborator. Redirecting you to your dashboard...
             </p>
             <button
-              onClick={() => navigate('/oorb-forms')}
+              onClick={() => navigate('/forms-by-gessions')}
               className="w-full py-4 bg-slate-900 text-white font-bold rounded-2xl hover:bg-slate-800 transition-all flex items-center justify-center gap-2 group shadow-xl shadow-slate-200"
             >
               <span>Go to Dashboard</span>
@@ -79,7 +79,7 @@ const AcceptInvitation: React.FC = () => {
             </p>
             <div className="space-y-3">
                <button
-                onClick={() => navigate('/oorb-forms')}
+                onClick={() => navigate('/forms-by-gessions')}
                 className="w-full py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
               >
                 Back to Safety

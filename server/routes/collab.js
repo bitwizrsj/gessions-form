@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import Form from '../models/Form.js';
 import User from '../models/User.js';
 import { authenticateToken } from '../middleware/auth.js';
@@ -51,7 +51,7 @@ router.post('/:formId/invite', authenticateToken, async (req, res) => {
     const acceptUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/collab/accept/${token}`;
     
     const mailOptions = {
-      from: `"OORB Forms" <${process.env.EMAIL_USER}>`,
+      from: `"Forms by Gessions" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: `Invitation to collaborate on "${form.title}"`,
       html: `
@@ -65,7 +65,7 @@ router.post('/:formId/invite', authenticateToken, async (req, res) => {
           </div>
           <p style="color: #666; font-size: 13px;">If you don't have an account, you'll be asked to create one first.</p>
           <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-          <p style="font-size: 11px; color: #999;">OORB Forms - The modern way to collect data.</p>
+          <p style="font-size: 11px; color: #999;">Forms by Gessions - The modern way to collect data.</p>
         </div>
       `
     };

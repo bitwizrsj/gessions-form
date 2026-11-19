@@ -4,11 +4,7 @@ const fieldSchema = new mongoose.Schema({
   id: { type: String, required: true },
   type: {
     type: String,
-    required: true,
-    enum: [
-      'text', 'email', 'phone', 'textarea', 'select',
-      'radio', 'checkbox', 'date', 'file', 'rating', 'question'
-    ]
+    required: true
   },
   label: { type: String, required: true },
   placeholder: String,
@@ -65,6 +61,7 @@ const formSchema = new mongoose.Schema({
       backgroundColor: { type: String, default: '#FFFFFF' }
     },
     expiryDate: { type: Date, default: null },
+    closedMessage: { type: String, default: null },
     allowEditing: { type: Boolean, default: false },
     emailCopy: { type: Boolean, default: false },
     editingDuration: { type: Number, default: 0 } // in minutes, 0 means until form expires

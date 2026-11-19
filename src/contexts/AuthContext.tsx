@@ -8,6 +8,8 @@ interface User {
   email: string;
   avatar?: string;
   role: string;
+  organization?: string;
+  department?: string;
   preferences: {
     theme: string;
     notifications: boolean;

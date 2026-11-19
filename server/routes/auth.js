@@ -1,4 +1,4 @@
-import express from 'express';
+﻿import express from 'express';
 import jwt from 'jsonwebtoken';
 import { google } from 'googleapis';
 import { createTransport } from 'nodemailer';
@@ -73,9 +73,9 @@ router.post('/register', async (req, res) => {
     // Send email
     if (process.env.EMAIL_USER) {
       await transporter.sendMail({
-        from: `"OORB Forms" <${process.env.EMAIL_USER}>`,
+        from: `"Forms by Gessions" <${process.env.EMAIL_USER}>`,
         to: user.email,
-        subject: '🔐 Your Verification Code - OORB Forms',
+        subject: '🔐 Your Verification Code - Forms by Gessions',
         html: `
           <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:12px;overflow:hidden">
             <div style="background:#4F46E5;padding:24px;text-align:center">
@@ -339,14 +339,14 @@ router.post('/forgot-password', async (req, res) => {
     }
 
     await transporter.sendMail({
-      from: `"OORB Forms" <${process.env.EMAIL_USER}>`,
+      from: `"Forms by Gessions" <${process.env.EMAIL_USER}>`,
       to: user.email,
-      subject: '🔑 Reset your OORB Forms password',
+      subject: '🔑 Reset your Forms by Gessions password',
       html: `
         <div style="font-family:Inter,Arial,sans-serif;max-width:480px;margin:0 auto;background:#fff">
           <div style="background:#4F46E5;padding:24px 32px;border-radius:12px 12px 0 0">
             <h1 style="color:#fff;margin:0;font-size:20px;font-weight:700">Password Reset</h1>
-            <p style="color:#C7D2FE;margin:4px 0 0;font-size:13px">OORB Forms</p>
+            <p style="color:#C7D2FE;margin:4px 0 0;font-size:13px">Forms by Gessions</p>
           </div>
           <div style="padding:32px">
             <p style="color:#374151;font-size:15px;margin:0 0 8px">Hi <strong>${user.name}</strong>,</p>
@@ -356,7 +356,7 @@ router.post('/forgot-password', async (req, res) => {
             <p style="color:#9CA3AF;font-size:11px;margin:8px 0 0">Link expires in 15 minutes.</p>
           </div>
           <div style="padding:16px 32px;background:#F9FAFB;border-top:1px solid #E5E7EB;border-radius:0 0 12px 12px">
-            <p style="margin:0;font-size:11px;color:#9CA3AF">Powered by OORB Forms</p>
+            <p style="margin:0;font-size:11px;color:#9CA3AF">Powered by Forms by Gessions</p>
           </div>
         </div>
       `

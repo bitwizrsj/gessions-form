@@ -7,9 +7,11 @@ import {
   Eye, 
   CheckCircle,
   Calendar,
-  Download
+  Download,
+  X
 } from 'lucide-react';
 import { formAPI } from '../../services/api';
+import toast from 'react-hot-toast';
 
 interface AnalyticsData {
   totalViews: number;
@@ -69,11 +71,36 @@ const FormAnalytics: React.FC<FormAnalyticsProps> = ({ formId, onClose }) => {
 
   if (loading) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-        <div className="bg-white rounded-sm shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-          <div className="p-8 text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading analytics...</p>
+      <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-4xl w-full p-6 sm:p-8 space-y-6 animate-pulse">
+          {/* Header Skeleton */}
+          <div className="flex items-center justify-between border-b border-[#EDE5D8] pb-4">
+            <div className="space-y-2">
+              <div className="h-6 w-44 bg-[#ECE8E1] rounded-lg" />
+              <div className="h-3.5 w-60 bg-[#ECE8E1] rounded" />
+            </div>
+            <div className="h-8 w-20 bg-[#ECE8E1] rounded-xl" />
+          </div>
+
+          {/* 4 Stat Cards Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-4 space-y-2">
+                <div className="h-3.5 w-16 bg-[#ECE8E1] rounded" />
+                <div className="h-6 w-20 bg-[#ECE8E1] rounded" />
+                <div className="h-2.5 w-24 bg-[#ECE8E1] rounded" />
+              </div>
+            ))}
+          </div>
+
+          {/* Chart Placeholder Skeleton */}
+          <div className="h-56 bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-6 flex flex-col justify-between">
+            <div className="h-4 w-32 bg-[#ECE8E1] rounded" />
+            <div className="flex items-end justify-between gap-3 h-32 px-4">
+              {[40, 65, 30, 80, 55, 90, 70].map((h, idx) => (
+                <div key={idx} className="w-full bg-[#ECE8E1] rounded-t" style={{ height: `${h}%` }} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -83,62 +110,67 @@ const FormAnalytics: React.FC<FormAnalyticsProps> = ({ formId, onClose }) => {
   if (!analytics) return null;
 
   const StatCard = ({ icon: Icon, title, value, subtitle, trend }: any) => (
-    <div className="bg-white border border-gray-200 rounded-sm p-6">
+    <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-5">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{title}</p>
-          <p className="text-2xl font-bold text-gray-900">{value}</p>
-          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+          <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">{title}</p>
+          <p className="text-2xl font-black text-[#2C2520] mt-1">{value}</p>
+          {subtitle && <p className="text-xs text-slate-400 mt-0.5">{subtitle}</p>}
         </div>
-        <div className="w-12 h-12 bg-blue-100 rounded-sm flex items-center justify-center">
-          <Icon className="w-6 h-6 text-blue-600" />
+        <div className="w-10 h-10 bg-[#F5EFE6] rounded-xl flex items-center justify-center text-[#5C4A3E]">
+          <Icon className="w-5 h-5" />
         </div>
       </div>
       {trend && (
-        <div className="mt-4 flex items-center text-sm">
-          <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
-          <span className="text-green-600">{trend}</span>
+        <div className="mt-3 flex items-center text-xs font-bold text-emerald-700">
+          <TrendingUp className="w-3.5 h-3.5 mr-1" />
+          <span>{trend}</span>
         </div>
       )}
     </div>
   );
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-gray-50 rounded-sm shadow-xl max-w-6xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+    <div 
+      className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+      onClick={e => {
+        if (e.target === e.currentTarget && onClose) onClose();
+      }}
+    >
+      <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
         {/* Header */}
-        <div className="bg-white border-b border-gray-200 p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-sm flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h2 className="text-xl font-semibold text-gray-900">Form Analytics</h2>
-                <p className="text-gray-600">Detailed insights and performance metrics</p>
-              </div>
+        <div className="bg-[#FAF7F2] border-b border-[#EDE5D8] p-6 flex items-center justify-between shrink-0">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-[#F5EFE6] rounded-xl flex items-center justify-center text-[#5C4A3E]">
+              <BarChart3 className="w-5 h-5" />
             </div>
-            <div className="flex items-center space-x-3">
-              <select
-                value={timeRange}
-                onChange={(e) => setTimeRange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="7d">Last 7 days</option>
-                <option value="30d">Last 30 days</option>
-                <option value="90d">Last 90 days</option>
-              </select>
-              <button
-                onClick={onClose}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                ✕
-              </button>
+            <div>
+              <h2 className="text-xl font-bold text-[#2C2520]">Form Analytics</h2>
+              <p className="text-xs text-[#786E64] font-medium">Detailed insights and performance metrics</p>
             </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <select
+              value={timeRange}
+              onChange={(e) => setTimeRange(e.target.value)}
+              className="px-3.5 py-2 bg-white border border-[#E5DFD5] rounded-xl text-xs font-bold text-[#2C2520] outline-none focus:border-[#5C4A3E]"
+            >
+              <option value="7d">Last 7 days</option>
+              <option value="30d">Last 30 days</option>
+              <option value="90d">Last 90 days</option>
+            </select>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 hover:bg-[#F5EFE6] rounded-xl text-slate-400 hover:text-[#2C2520] transition-colors"
+              title="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-1">
           {/* Key Metrics */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard
@@ -168,11 +200,14 @@ const FormAnalytics: React.FC<FormAnalyticsProps> = ({ formId, onClose }) => {
           </div>
 
           {/* Conversion Trend Chart */}
-          <div className="bg-white border border-gray-200 rounded-sm p-6 mb-8">
+          <div className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-6 mb-6">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-gray-900">Conversion Trend</h3>
-              <button className="flex items-center space-x-2 px-3 py-2 text-gray-600 hover:bg-gray-100 rounded-md">
-                <Download className="w-4 h-4" />
+              <h3 className="text-base font-bold text-[#2C2520]">Conversion Trend</h3>
+              <button 
+                onClick={() => toast.success('Exporting trend data...')}
+                className="flex items-center space-x-1.5 px-3 py-1.5 bg-white border border-[#DDD5C7] text-xs font-bold text-slate-700 hover:bg-[#FAF7F2] rounded-xl transition-colors shadow-xs"
+              >
+                <Download className="w-3.5 h-3.5 text-[#5C4A3E]" />
                 <span>Export</span>
               </button>
             </div>
@@ -187,17 +222,17 @@ const FormAnalytics: React.FC<FormAnalyticsProps> = ({ formId, onClose }) => {
                   <div key={index} className="flex-1 flex flex-col items-center">
                     <div className="w-full flex items-end space-x-1 mb-2">
                       <div
-                        className="bg-blue-200 rounded-t"
+                        className="bg-[#DDD5C7] rounded-t"
                         style={{ height: `${viewHeight}px`, width: '50%' }}
                         title={`${day.views} views`}
                       />
                       <div
-                        className="bg-blue-600 rounded-t"
+                        className="bg-[#5C4A3E] rounded-t"
                         style={{ height: `${responseHeight}px`, width: '50%' }}
                         title={`${day.responses} responses`}
                       />
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-[11px] font-semibold text-slate-400">
                       {new Date(day.date).toLocaleDateString('en-US', { weekday: 'short' })}
                     </div>
                   </div>
@@ -205,43 +240,43 @@ const FormAnalytics: React.FC<FormAnalyticsProps> = ({ formId, onClose }) => {
               })}
             </div>
             
-            <div className="flex items-center justify-center space-x-6 mt-4 text-sm">
+            <div className="flex items-center justify-center space-x-6 mt-4 text-xs font-semibold">
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-blue-200 rounded"></div>
-                <span className="text-gray-600">Views</span>
+                <div className="w-3 h-3 bg-[#DDD5C7] rounded"></div>
+                <span className="text-slate-500">Views</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-blue-600 rounded"></div>
-                <span className="text-gray-600">Responses</span>
+                <div className="w-3 h-3 bg-[#5C4A3E] rounded"></div>
+                <span className="text-[#2C2520]">Responses</span>
               </div>
             </div>
           </div>
 
           {/* Field Analytics */}
-          <div className="bg-white border border-gray-200 rounded-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Field Performance</h3>
+          <div className="bg-white border border-[#E5DFD5] rounded-xl p-6">
+            <h3 className="text-base font-bold text-[#2C2520] mb-4">Field Performance</h3>
             
-            <div className="space-y-4">
+            <div className="space-y-3">
               {analytics.fieldAnalytics.map((field, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-50 rounded-sm">
+                <div key={index} className="flex items-center justify-between p-4 bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl">
                   <div className="flex-1">
-                    <h4 className="font-medium text-gray-900">{field.fieldLabel}</h4>
-                    <div className="flex items-center space-x-4 mt-2 text-sm text-gray-600">
-                      <div className="flex items-center space-x-1">
-                        <CheckCircle className="w-4 h-4" />
+                    <h4 className="font-bold text-[#2C2520] text-sm">{field.fieldLabel}</h4>
+                    <div className="flex items-center space-x-4 mt-1.5 text-xs text-slate-500 font-medium">
+                      <div className="flex items-center space-x-1 text-emerald-700">
+                        <CheckCircle className="w-3.5 h-3.5" />
                         <span>{field.completionRate}% completion</span>
                       </div>
                       <div className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="w-3.5 h-3.5" />
                         <span>{field.averageTime}s avg time</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="w-32">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-[#E5DFD5] rounded-full h-2 overflow-hidden">
                       <div
-                        className="bg-blue-600 h-2 rounded-full"
+                        className="bg-[#5C4A3E] h-2 rounded-full"
                         style={{ width: `${field.completionRate}%` }}
                       />
                     </div>

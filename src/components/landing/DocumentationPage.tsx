@@ -1,4 +1,4 @@
-import React from "react";
+﻿import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Book, Zap, Shield, Cpu, Code } from "lucide-react";
 
@@ -7,7 +7,7 @@ export default function DocumentationPage() {
     {
       title: "Getting Started",
       icon: <Book className="w-6 h-6 text-indigo-400" />,
-      content: "Learn how to set up your Oorb Forms account and create your first AI-powered form in minutes. Discover our intuitive dashboard and primary navigation tools."
+      content: "Learn how to set up your Forms by Gessions account and create your first AI-powered form in minutes. Discover our intuitive dashboard and primary navigation tools."
     },
     {
       title: "AI Form Builder",
@@ -22,7 +22,7 @@ export default function DocumentationPage() {
     {
       title: "Developer API",
       icon: <Code className="w-6 h-6 text-indigo-400" />,
-      content: "Integrate Oorb Forms with your existing stack. Our robust REST API and Webhook system allow you to sync data to your database, CRM, or custom endpoints in real-time."
+      content: "Integrate Forms by Gessions with your existing stack. Our robust REST API and Webhook system allow you to sync data to your database, CRM, or custom endpoints in real-time."
     }
   ];
 
@@ -40,7 +40,7 @@ export default function DocumentationPage() {
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span>Back to Home</span>
           </Link>
-          <div className="text-xl font-semibold">Oorb Docs</div>
+          <div className="text-xl font-semibold">Gessions Docs</div>
           <div className="w-20" /> {/* Spacer */}
         </div>
       </header>
@@ -50,7 +50,7 @@ export default function DocumentationPage() {
           <div className="mb-16">
             <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Documentation</h1>
             <p className="text-gray-400 text-lg leading-relaxed max-w-2xl">
-              Everything you need to know about building, scaling, and automating your data collection with Oorb Forms.
+              Everything you need to know about building, scaling, and automating your data collection with Forms by Gessions.
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export default function DocumentationPage() {
 
       <footer className="border-t border-gray-800/50 py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-sm text-gray-500">© 2026 Oorb Forms. Documentation Version 3.0</p>
+          <p className="text-sm text-gray-500">© 2026 Forms by Gessions. Documentation Version 3.0</p>
           <div className="flex gap-8 text-sm text-gray-500">
             <a href="#" className="hover:text-white transition-colors">Privacy</a>
             <a href="#" className="hover:text-white transition-colors">Terms</a>

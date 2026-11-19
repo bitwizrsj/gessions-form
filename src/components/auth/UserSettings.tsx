@@ -72,11 +72,11 @@ const UserSettings: React.FC = () => {
       <div className="grid md:grid-cols-3 gap-8">
         {/* Left Col: Instructions */}
         <div className="space-y-4">
-          <div className="bg-indigo-50 p-5 rounded-2xl border border-indigo-100">
-            <h3 className="text-sm font-bold text-indigo-900 flex items-center gap-2 mb-2">
-              <User className="w-4 h-4" /> Personal Information
+          <div className="bg-[#F5EFE6] p-5 rounded-2xl border border-[#DDD5C7]">
+            <h3 className="text-sm font-bold text-[#2C2520] flex items-center gap-2 mb-2">
+              <User className="w-4 h-4 text-[#5C4A3E]" /> Personal Information
             </h3>
-            <p className="text-[12px] text-indigo-700/80 leading-relaxed">
+            <p className="text-[12px] text-[#786E64] leading-relaxed">
               Your name and avatar will be visible to collaborators and on forms you create.
             </p>
           </div>
@@ -84,13 +84,13 @@ const UserSettings: React.FC = () => {
 
         {/* Right Col: Form */}
         <div className="md:col-span-2">
-          <form onSubmit={handleUpdateProfile} className="bg-white border border-slate-200 rounded-[24px] p-6 shadow-sm space-y-6">
+          <form onSubmit={handleUpdateProfile} className="bg-white border border-[#DDD5C7] rounded-[24px] p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-6 pb-6 border-b border-slate-50">
               <div className="relative group">
                 {avatar ? (
                   <img src={avatar} alt="Profile" className="w-20 h-20 rounded-2xl object-cover ring-4 ring-slate-50" />
                 ) : (
-                  <div className="w-20 h-20 bg-indigo-100 rounded-2xl flex items-center justify-center text-indigo-700 text-2xl font-bold ring-4 ring-slate-50">
+                  <div className="w-20 h-20 bg-[#F5EFE6] rounded-2xl flex items-center justify-center text-[#5C4A3E] text-2xl font-bold ring-4 ring-[#FAF7F2]">
                     {name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -99,27 +99,27 @@ const UserSettings: React.FC = () => {
                 </div>
               </div>
               <div className="flex-1 space-y-1">
-                <h4 className="font-bold text-slate-900 text-lg">{name}</h4>
-                <p className="text-slate-400 text-sm">{email}</p>
+                <h4 className="font-bold text-[#2C2520] text-lg">{name}</h4>
+                <p className="text-[#786E64] text-sm">{email}</p>
               </div>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Full Name</label>
+                <label className="text-xs font-bold text-[#786E64] uppercase tracking-wider ml-1">Full Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#DDD5C7] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] focus:bg-white outline-none transition-all"
                     placeholder="Your Name"
                   />
                 </div>
               </div>
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Email Address</label>
+                <label className="text-xs font-bold text-[#786E64] uppercase tracking-wider ml-1">Email Address</label>
                 <div className="relative opacity-50">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
@@ -133,12 +133,12 @@ const UserSettings: React.FC = () => {
             </div>
 
             <div className="space-y-1.5 pt-2">
-              <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Avatar URL</label>
+              <label className="text-xs font-bold text-[#786E64] uppercase tracking-wider ml-1">Avatar URL</label>
               <input
                 type="text"
                 value={avatar}
                 onChange={(e) => setAvatar(e.target.value)}
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                className="w-full px-4 py-2.5 bg-[#FAF7F2] border border-[#DDD5C7] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] focus:bg-white outline-none transition-all"
                 placeholder="https://images.unsplash.com/photo-..."
               />
               <p className="text-[10px] text-slate-400 ml-1 italic">Link an image from the web to set as your profile picture.</p>
@@ -148,7 +148,7 @@ const UserSettings: React.FC = () => {
               <button
                 type="submit"
                 disabled={updatingProfile}
-                className="flex items-center gap-2 px-6 py-2.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 shadow-sm shadow-indigo-100 disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#5C4A3E] text-white font-bold rounded-xl hover:bg-[#483A30] shadow-sm shadow-[#5C4A3E]/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {updatingProfile ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
                 {updatingProfile ? 'Saving...' : 'Save Changes'}
@@ -183,7 +183,7 @@ const UserSettings: React.FC = () => {
                     type="password"
                     value={currentPassword}
                     onChange={(e) => setCurrentPassword(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-rose-500 focus:bg-white outline-none transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#DDD5C7] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] focus:bg-white outline-none transition-all"
                     placeholder="••••••••"
                   />
                 </div>
@@ -191,27 +191,27 @@ const UserSettings: React.FC = () => {
 
               <div className="grid sm:grid-cols-2 gap-4 pt-2">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">New Password</label>
+                  <label className="text-xs font-bold text-[#786E64] uppercase tracking-wider ml-1">New Password</label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#DDD5C7] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] focus:bg-white outline-none transition-all"
                       placeholder="••••••••"
                     />
                   </div>
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-wider ml-1">Confirm New Password</label>
+                  <label className="text-xs font-bold text-[#786E64] uppercase tracking-wider ml-1">Confirm New Password</label>
                   <div className="relative">
                     <Check className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none transition-all"
+                      className="w-full pl-10 pr-4 py-2.5 bg-[#FAF7F2] border border-[#DDD5C7] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] focus:bg-white outline-none transition-all"
                       placeholder="••••••••"
                     />
                   </div>
@@ -223,7 +223,7 @@ const UserSettings: React.FC = () => {
               <button
                 type="submit"
                 disabled={changingPassword}
-                className="flex items-center gap-2 px-6 py-2.5 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 shadow-sm disabled:opacity-50 transition-all active:scale-[0.98]"
+                className="flex items-center gap-2 px-6 py-2.5 bg-[#5C4A3E] text-white font-bold rounded-xl hover:bg-[#483A30] shadow-sm shadow-[#5C4A3E]/20 disabled:opacity-50 transition-all active:scale-[0.98]"
               >
                 {changingPassword ? <Loader2 className="w-4 h-4 animate-spin" /> : <Shield className="w-4 h-4" />}
                 {changingPassword ? 'Changing...' : 'Change Password'}

@@ -101,22 +101,22 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
 
   if (value) {
     return (
-      <div className="border border-gray-300 rounded-md p-4">
+      <div className="border border-[#E5DFD5] bg-[#FAF7F2] rounded-xl p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <CheckCircle className="w-5 h-5 text-green-500" />
+            <CheckCircle className="w-5 h-5 text-emerald-600" />
             {getFileIcon(value)}
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-slate-800">
                 {getFileName(value)}
               </p>
-              <p className="text-xs text-gray-500">File uploaded successfully</p>
+              <p className="text-xs text-slate-400">File uploaded successfully</p>
             </div>
           </div>
           <button
             type="button"
             onClick={removeFile}
-            className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+            className="p-1 text-slate-400 hover:text-red-500 transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
@@ -127,7 +127,7 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
             <img
               src={value}
               alt="Uploaded file"
-              className="max-w-full h-32 object-cover rounded border"
+              className="max-w-full h-32 object-cover rounded-lg border border-[#E5DFD5]"
             />
           </div>
         )}
@@ -137,38 +137,39 @@ const FileUploadField: React.FC<FileUploadFieldProps> = ({
 
   return (
     <div
-      className={`border-2 border-dashed rounded-md p-6 text-center transition-colors ${dragOver
-        ? 'border-blue-400 bg-blue-50'
-        : 'border-gray-300 hover:border-gray-400'
+      className={`border border-dashed border-[#D5CFC5] bg-[#FAF7F2] rounded-xl p-5 text-center transition-colors cursor-pointer hover:bg-[#F5EFE6] ${dragOver
+        ? 'border-[#5C4A3E] bg-[#F5EFE6]'
+        : ''
         } ${uploading ? 'opacity-50 pointer-events-none' : ''}`}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
+      onClick={() => {
+        const input = document.getElementById(`file-upload-${fieldId}`);
+        if (input) input.click();
+      }}
     >
       {uploading ? (
         <div className="flex flex-col items-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-2"></div>
-          <p className="text-sm text-gray-600">Uploading...</p>
+          <div className="animate-spin rounded-full h-6 w-6 border-2 border-stone-300 border-t-[#5C4A3E] mb-2"></div>
+          <p className="text-[12.5px] text-slate-600">Uploading...</p>
         </div>
       ) : (
         <>
-          <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+          <Upload className="w-5 h-5 text-[#5C4A3E] mx-auto mb-1" />
           <input
             type="file"
             onChange={(e) => handleFileSelect(e.target.files)}
             className="hidden"
-            id="file-upload"
+            id={`file-upload-${fieldId}`}
             accept={accept}
             multiple={multiple}
           />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            <span className="text-blue-600 hover:text-blue-700 font-medium">
-              Click to upload
-            </span>
-            <span className="text-gray-600"> or drag and drop</span>
-          </label>
-          <p className="text-xs text-gray-500 mt-1">
-            Maximum file size: {maxSize}MB
+          <p className="text-[12.5px] text-slate-600 font-medium">
+            Click to upload or drag & drop
+          </p>
+          <p className="text-[11px] text-slate-400 mt-0.5">
+            Max file size: {maxSize}MB
           </p>
         </>
       )}

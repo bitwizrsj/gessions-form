@@ -19,9 +19,10 @@ const PORT = process.env.PORT || 5000;
 const BASE_ORIGINS = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
-  'https://oorb-forms.vercel.app',
-  'https://forms.oorbtech.com',
+  'https://forms-by-gessions.vercel.app',
+  'https://forms.GESSIONStech.com',
   'https://nb0fzghw-5173.inc1.devtunnels.ms',
+  'http://72.62.248.59',
 ];
 const extraOrigins = process.env.CORS_ORIGINS
   ? process.env.CORS_ORIGINS.split(',').map(o => o.trim()).filter(Boolean)
@@ -60,7 +61,7 @@ app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'OORB Forms API is running' });
+  res.json({ status: 'OK', message: 'Forms by Gessions API is running' });
 });
 
 // MongoDB connection

@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Star, Upload, Send, CheckCircle, AlertCircle, FileText, Edit3, Eye, X } from 'lucide-react';
+import { Star, Upload, Send, CheckCircle, AlertCircle, FileText, Edit3, Eye, X, Lock, Calendar } from 'lucide-react';
 import { formAPI, responseAPI } from '../../services/api';
-import FormHeader from './FormHeader';
 import toast from 'react-hot-toast';
 import FileUploadField from './FileUploadField';
 import QuestionAnswerField from './QuestionAnswerField';
@@ -12,6 +11,7 @@ interface FormField {
   type: string;
   label: string;
   placeholder?: string;
+  helperText?: string;
   required: boolean;
   options?: string[];
   validation?: any;
@@ -31,6 +31,7 @@ interface Form {
   fields: FormField[];
   status: string;
   headerImage?: string;
+  submitButtonText?: string;
   settings?: {
     requireLogin?: boolean;
     allowMultipleResponses?: boolean;
@@ -40,6 +41,8 @@ interface Form {
     allowEditing?: boolean;
     emailCopy?: boolean;
     editingDuration?: number;
+    expiryDate?: string | Date | null;
+    closedMessage?: string | null;
   };
   views?: number;
   responses?: number;
@@ -202,7 +205,7 @@ const FormRenderer: React.FC = () => {
           } catch (e) { console.error(e); }
         } else {
           try {
-            const local = JSON.parse(localStorage.getItem('oorb_submissions') || '{}');
+            const local = JSON.parse(localStorage.getItem('GESSIONS_submissions') || '{}');
             existingId = local[shareUrl];
           } catch (e) { console.error(e); }
         }
@@ -356,10 +359,10 @@ const FormRenderer: React.FC = () => {
         toast.success('Form submitted successfully!');
         
         try {
-          const localSubmitted = JSON.parse(localStorage.getItem('oorb_submissions') || '{}');
+          const localSubmitted = JSON.parse(localStorage.getItem('GESSIONS_submissions') || '{}');
           if (shareUrl) {
             localSubmitted[shareUrl] = newResponseId;
-            localStorage.setItem('oorb_submissions', JSON.stringify(localSubmitted));
+            localStorage.setItem('GESSIONS_submissions', JSON.stringify(localSubmitted));
           }
         } catch (e) { console.error('Error saving local submission state:', e); }
       }
@@ -376,44 +379,22 @@ const FormRenderer: React.FC = () => {
   };
 
   const renderField = (field: FormField) => {
-    const baseClasses = `w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${errors[field.id] ? 'border-red-300' : 'border-gray-300'
-      }`;
+    const baseClasses = `w-full px-3.5 py-2 text-[13px] bg-[#FAF7F2] border ${errors[field.id] ? 'border-red-400 ring-1 ring-red-400' : 'border-[#E5DFD5]'} rounded-xl outline-none focus:border-[#5C4A3E] focus:bg-white transition-all text-[#2C2520] placeholder:text-stone-400`;
 
     switch (field.type) {
-      case 'text':
-      case 'email':
-      case 'phone':
-        return (
-          <div>
-            <input
-              type={field.type}
-              placeholder={field.placeholder}
-              value={responses[field.id] || ''}
-              onChange={(e) => handleInputChange(field.id, e.target.value)}
-              className={baseClasses}
-            />
-            {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                <span>{errors[field.id]}</span>
-              </div>
-            )}
-          </div>
-        );
-
       case 'textarea':
         return (
           <div>
             <textarea
-              placeholder={field.placeholder}
+              rows={3}
+              placeholder={field.placeholder || 'Enter your message'}
               value={responses[field.id] || ''}
               onChange={(e) => handleInputChange(field.id, e.target.value)}
-              rows={4}
               className={baseClasses}
             />
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -428,14 +409,14 @@ const FormRenderer: React.FC = () => {
               onChange={(e) => handleInputChange(field.id, e.target.value)}
               className={baseClasses}
             >
-              <option value="">Choose an option</option>
+              <option value="">{field.placeholder || 'Select an option'}</option>
               {field.options?.map((option, index) => (
                 <option key={index} value={option}>{option}</option>
               ))}
             </select>
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -445,24 +426,24 @@ const FormRenderer: React.FC = () => {
       case 'radio':
         return (
           <div>
-            <div className="space-y-2">
+            <div className="space-y-2 pt-1">
               {field.options?.map((option, index) => (
-                <label key={index} className="flex items-center space-x-2">
+                <label key={index} className="flex items-center gap-2.5 text-[13px] text-slate-700 cursor-pointer select-none">
                   <input
                     type="radio"
                     name={field.id}
                     value={option}
                     checked={responses[field.id] === option}
                     onChange={(e) => handleInputChange(field.id, e.target.value)}
-                    className="text-blue-600 focus:ring-blue-500"
+                    className="accent-[#5C4A3E]"
                   />
-                  <span className="text-sm sm:text-base">{option}</span>
+                  <span>{option}</span>
                 </label>
               ))}
             </div>
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -472,29 +453,55 @@ const FormRenderer: React.FC = () => {
       case 'checkbox':
         return (
           <div>
-            <div className="space-y-2">
-              {field.options?.map((option, index) => (
-                <label key={index} className="flex items-center space-x-2">
-                  <input
-                    type="checkbox"
-                    value={option}
-                    checked={(responses[field.id] || []).includes(option)}
-                    onChange={(e) => {
-                      const currentValues = responses[field.id] || [];
-                      const newValues = e.target.checked
-                        ? [...currentValues, option]
-                        : currentValues.filter((v: string) => v !== option);
-                      handleInputChange(field.id, newValues);
-                    }}
-                    className="text-blue-600 focus:ring-blue-500 rounded"
-                  />
-                  <span className="text-sm sm:text-base">{option}</span>
-                </label>
+            <div className="space-y-2 pt-1">
+              {field.options?.map((option, index) => {
+                const currentValues = Array.isArray(responses[field.id]) ? responses[field.id] : [];
+                return (
+                  <label key={index} className="flex items-center gap-2.5 text-[13px] text-slate-700 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      value={option}
+                      checked={currentValues.includes(option)}
+                      onChange={(e) => {
+                        const newValues = e.target.checked
+                          ? [...currentValues, option]
+                          : currentValues.filter((v: string) => v !== option);
+                        handleInputChange(field.id, newValues);
+                      }}
+                      className="rounded accent-[#5C4A3E]"
+                    />
+                    <span>{option}</span>
+                  </label>
+                );
+              })}
+            </div>
+            {errors[field.id] && (
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{errors[field.id]}</span>
+              </div>
+            )}
+          </div>
+        );
+
+      case 'rating':
+        return (
+          <div>
+            <div className="flex items-center gap-1.5 pt-1 text-amber-400">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-6 h-6 cursor-pointer transition-colors ${(responses[field.id] || 0) >= star
+                    ? 'fill-current'
+                    : 'text-slate-300'
+                    }`}
+                  onClick={() => handleInputChange(field.id, star)}
+                />
               ))}
             </div>
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -511,8 +518,8 @@ const FormRenderer: React.FC = () => {
               className={baseClasses}
             />
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -520,7 +527,6 @@ const FormRenderer: React.FC = () => {
         );
 
       case 'file': {
-        // Dynamically search for a field labeled 'Name', 'Student Name', 'Full Name', etc.
         const nameField = form?.fields.find(f =>
           f.label.toLowerCase().includes('name') &&
           (f.type === 'text' || f.type === 'select')
@@ -539,43 +545,14 @@ const FormRenderer: React.FC = () => {
               subfolderName={derivedSubfolderName}
             />
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
           </div>
         );
       }
-
-      case 'rating':
-        return (
-          <div>
-            <div className="flex space-x-1">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-6 h-6 sm:w-8 sm:h-8 cursor-pointer transition-colors ${(responses[field.id] || 0) >= star
-                    ? 'text-yellow-400 fill-current'
-                    : 'text-gray-300 hover:text-yellow-400'
-                    }`}
-                  onClick={() => handleInputChange(field.id, star)}
-                />
-              ))}
-              {responses[field.id] && (
-                <span className="ml-2 text-sm text-gray-600">
-                  {responses[field.id]}/5
-                </span>
-              )}
-            </div>
-            {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
-                <span>{errors[field.id]}</span>
-              </div>
-            )}
-          </div>
-        );
 
       case 'question':
         return (
@@ -590,8 +567,8 @@ const FormRenderer: React.FC = () => {
               selectedAnswers={responses[field.id] || []}
             />
             {errors[field.id] && (
-              <div className="flex items-center space-x-1 mt-1 text-red-600 text-sm">
-                <AlertCircle className="w-4 h-4" />
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 <span>{errors[field.id]}</span>
               </div>
             )}
@@ -599,16 +576,45 @@ const FormRenderer: React.FC = () => {
         );
 
       default:
-        return null;
+        return (
+          <div>
+            <input
+              type={field.type === 'number' ? 'number' : field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
+              placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
+              value={responses[field.id] || ''}
+              onChange={(e) => handleInputChange(field.id, e.target.value)}
+              className={baseClasses}
+            />
+            {errors[field.id] && (
+              <div className="flex items-center space-x-1 mt-1 text-red-600 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
+                <span>{errors[field.id]}</span>
+              </div>
+            )}
+          </div>
+        );
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading form...</p>
+      <div className="min-h-screen bg-[#FAF7F2] py-8 sm:py-12 px-4 flex justify-center items-start">
+        <div className="w-full max-w-[620px] bg-white rounded-2xl border border-[#ECE8E1] p-8 space-y-6 shadow-sm animate-pulse">
+          <div className="space-y-2">
+            <div className="h-7 w-48 bg-[#ECE8E1] rounded-lg" />
+            <div className="h-4 w-72 bg-[#ECE8E1] rounded" />
+          </div>
+          <div className="space-y-5 pt-2">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="space-y-1.5">
+                <div className="h-4 w-28 bg-[#ECE8E1] rounded" />
+                <div className="h-9 w-full bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl" />
+              </div>
+            ))}
+            <div className="pt-2">
+              <div className="h-10 w-full bg-[#ECE8E1] rounded-xl" />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -616,10 +622,73 @@ const FormRenderer: React.FC = () => {
 
   if (!form) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Form Not Found</h1>
-          <p className="text-gray-600">The form you're looking for doesn't exist or has been removed.</p>
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-[#DDD5C7] overflow-hidden text-center p-8">
+          <div className="w-16 h-16 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#ECE8E1]">
+            <AlertCircle className="w-8 h-8 text-[#5C4A3E]" />
+          </div>
+          <h1 className="text-2xl font-serif font-black tracking-tight text-[#2C2520] mb-2">Form Not Found</h1>
+          <p className="text-[#706B63] text-sm leading-relaxed mb-6">
+            The form you're looking for doesn't exist or has been removed.
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="px-6 py-2.5 bg-[#5C4A3E] text-white font-bold text-sm rounded-xl hover:bg-[#483A30] transition-all shadow-sm"
+          >
+            Go Back Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Form Closed screen — shown when form is manually closed or past validity/closing date
+  if (isClosed || form.status === 'closed') {
+    return (
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 selection:bg-[#5C4A3E]/10">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-[#DDD5C7] overflow-hidden text-center animate-in fade-in zoom-in-95 duration-200">
+          <div className="h-2 bg-[#5C4A3E]" />
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#ECE8E1]">
+              <Lock className="w-8 h-8 text-[#5C4A3E]" />
+            </div>
+
+            {form.title && (
+              <div className="mb-2">
+                <span className="inline-block px-3 py-1 bg-[#FAF8F5] border border-[#E5DFD5] rounded-full text-[12px] font-semibold text-[#706B63] max-w-[280px] truncate">
+                  {form.title}
+                </span>
+              </div>
+            )}
+
+            <h1 className="text-2xl font-serif font-black tracking-tight text-[#2C2520] mb-2">
+              Form Closed
+            </h1>
+            <p className="text-[#706B63] text-sm leading-relaxed mb-5">
+              {form.settings?.closedMessage ||
+                'This form is no longer accepting responses. Please contact the form creator if you believe this is an error.'}
+            </p>
+
+            {form.settings?.expiryDate && (
+              <div className="inline-flex items-center gap-2 text-[12px] text-[#8C827A] mb-6 bg-[#FAF7F2] py-2 px-3.5 rounded-xl border border-[#ECE8E1]">
+                <Calendar className="w-3.5 h-3.5 text-[#5C4A3E]" />
+                <span>Closed on {new Date(form.settings.expiryDate).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}</span>
+              </div>
+            )}
+
+            <div>
+              <button
+                onClick={() => window.location.href = '/'}
+                className="w-full sm:w-auto px-7 py-2.5 bg-[#5C4A3E] text-white font-bold text-sm rounded-xl hover:bg-[#483A30] active:scale-[0.98] transition-all shadow-sm"
+              >
+                Go Back Home
+              </button>
+            </div>
+
+            <p className="text-[11px] text-slate-400 mt-6">
+              Forms by Gessions
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -627,36 +696,21 @@ const FormRenderer: React.FC = () => {
 
   if (form.status !== 'published') {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center">
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Form Not Available</h1>
-          <p className="text-gray-600">This form is not currently accepting responses.</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Domain restriction screen — shown when user is logged in but wrong domain
-  if (isClosed) {
-    return (
-      <div className="min-h-screen bg-[#F0F4F8] flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-100 overflow-hidden">
-          <div className="h-2 bg-slate-400" />
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <FileText className="w-8 h-8 text-slate-400" />
-            </div>
-            <h1 className="text-xl font-bold text-slate-900 mb-2">Form Closed</h1>
-            <p className="text-slate-500 text-sm leading-relaxed mb-6">
-              This form is no longer accepting responses. Please contact the form creator if you believe this is an error.
-            </p>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="px-6 py-2.5 bg-slate-900 text-white font-bold text-sm rounded-xl hover:bg-slate-800 transition-all"
-            >
-              Go Back Home
-            </button>
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-white rounded-2xl shadow-xl border border-[#DDD5C7] overflow-hidden text-center p-8">
+          <div className="w-16 h-16 bg-[#F5EFE6] rounded-2xl flex items-center justify-center mx-auto mb-4 border border-[#ECE8E1]">
+            <FileText className="w-8 h-8 text-[#5C4A3E]" />
           </div>
+          <h1 className="text-2xl font-serif font-black tracking-tight text-[#2C2520] mb-2">Form Not Available</h1>
+          <p className="text-[#706B63] text-sm leading-relaxed mb-6">
+            This form is currently in draft mode and is not published yet.
+          </p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="px-6 py-2.5 bg-[#5C4A3E] text-white font-bold text-sm rounded-xl hover:bg-[#483A30] transition-all shadow-sm"
+          >
+            Go Back Home
+          </button>
         </div>
       </div>
     );
@@ -748,16 +802,16 @@ const FormRenderer: React.FC = () => {
 
         {/* Local View Response Modal */}
         {showSubmittedResponse && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 text-left">
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 text-left">
+              <div className="p-6 border-b border-[#EDE5D8] flex items-center justify-between bg-[#FAF7F2]">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Your Response Details</h3>
+                  <h3 className="text-lg font-bold text-[#2C2520]">Your Response Details</h3>
                   <p className="text-slate-500 text-sm mt-0.5">Submitted answers for {form?.title}</p>
                 </div>
                 <button
                   onClick={() => setShowSubmittedResponse(false)}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                  className="p-2 text-slate-400 hover:text-[#2C2520] hover:bg-[#F5EFE6] rounded-xl transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -766,11 +820,11 @@ const FormRenderer: React.FC = () => {
               <div className="p-6 overflow-y-auto flex-1">
                 <div className="space-y-4">
                   {form?.fields.map((field) => (
-                    <div key={field.id} className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                    <div key={field.id} className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-4">
                       <h5 className="font-semibold text-slate-700 text-sm mb-2">
                         {field.label}
                       </h5>
-                      <p className="text-slate-900 font-medium break-words text-[15px]">
+                      <p className="text-[#2C2520] font-medium break-words text-[15px]">
                         {formatValue(responses[field.id])}
                       </p>
                     </div>
@@ -786,22 +840,22 @@ const FormRenderer: React.FC = () => {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-[40px] shadow-2xl shadow-indigo-100/50 max-w-lg w-full p-12 text-center animate-in fade-in zoom-in duration-500 border border-slate-100">
-          <div className="w-24 h-24 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce transition-transform duration-1000">
-            <CheckCircle className="w-12 h-12 text-indigo-600" />
+      <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4">
+        <div className="bg-white rounded-[40px] shadow-2xl max-w-lg w-full p-12 text-center animate-in fade-in zoom-in duration-500 border border-[#DDD5C7]" style={{ boxShadow: '0 20px 50px rgba(92,74,62,0.08)' }}>
+          <div className="w-24 h-24 bg-[#F5EFE6] rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce transition-transform duration-1000">
+            <CheckCircle className="w-12 h-12 text-[#5C4A3E]" />
           </div>
-          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">Form Submitted Successfully!</h2>
-          <p className="text-slate-500 font-medium text-lg leading-relaxed mb-10">
-            Thank you for your response to <strong className="text-indigo-600 font-bold">"{form?.title}"</strong>.
+          <h2 className="text-3xl font-black text-[#2C2520] mb-4 tracking-tight">Form Submitted Successfully!</h2>
+          <p className="text-[#786E64] font-medium text-lg leading-relaxed mb-10">
+            Thank you for your response to <strong className="text-[#5C4A3E] font-bold">"{form?.title}"</strong>.
           </p>
           <div className="space-y-4">
             {form?.settings?.allowEditing && user && (
-              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                 <p className="text-sm text-slate-600 mb-4 font-semibold">Want to change something?</p>
+              <div className="p-6 bg-[#FAF7F2] rounded-3xl border border-[#DDD5C7]">
+                 <p className="text-sm text-[#786E64] mb-4 font-semibold">Want to change something?</p>
                  <button
                    onClick={() => window.location.href = `/form/${shareUrl}?edit=${submittedResponseId}`}
-                   className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100"
+                   className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-[#5C4A3E] text-white font-bold rounded-2xl hover:bg-[#483A30] transition-all shadow-md shadow-[#5C4A3E]/20"
                  >
                    <Edit3 className="w-4 h-4" />
                    Edit Your Response
@@ -810,7 +864,7 @@ const FormRenderer: React.FC = () => {
             )}
             <button
               onClick={() => setShowSubmittedResponse(true)}
-              className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-slate-200 text-slate-700 font-bold rounded-2xl hover:bg-slate-50 transition-all"
+              className="w-full flex items-center justify-center gap-2 px-6 py-4 border-2 border-[#DDD5C7] text-[#2C2520] font-bold rounded-2xl hover:bg-[#F5EFE6] transition-all"
             >
               <Eye className="w-4 h-4" />
               See your response
@@ -820,16 +874,16 @@ const FormRenderer: React.FC = () => {
 
         {/* Local View Response Modal */}
         {showSubmittedResponse && (
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 text-left">
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200 text-left">
+              <div className="p-6 border-b border-[#EDE5D8] flex items-center justify-between bg-[#FAF7F2]">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-900">Your Response Details</h3>
+                  <h3 className="text-lg font-bold text-[#2C2520]">Your Response Details</h3>
                   <p className="text-slate-500 text-sm mt-0.5">Submitted answers for {form?.title}</p>
                 </div>
                 <button
                   onClick={() => setShowSubmittedResponse(false)}
-                  className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors"
+                  className="p-2 text-slate-400 hover:text-[#2C2520] hover:bg-[#F5EFE6] rounded-xl transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -838,11 +892,11 @@ const FormRenderer: React.FC = () => {
               <div className="p-6 overflow-y-auto flex-1">
                 <div className="space-y-4">
                   {form?.fields.map((field) => (
-                    <div key={field.id} className="bg-slate-50 border border-slate-100 rounded-xl p-4">
+                    <div key={field.id} className="bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl p-4">
                       <h5 className="font-semibold text-slate-700 text-sm mb-2">
                         {field.label}
                       </h5>
-                      <p className="text-slate-900 font-medium break-words text-[15px]">
+                      <p className="text-[#2C2520] font-medium break-words text-[15px]">
                         {formatValue(responses[field.id])}
                       </p>
                     </div>
@@ -857,151 +911,116 @@ const FormRenderer: React.FC = () => {
   }
 
   return (
-      <div className="min-h-screen bg-[#F0F4F8] pb-12">
-      <FormHeader form={form} />
+    <div className="min-h-screen bg-[#FAF7F2] py-8 sm:py-12 px-4 flex flex-col items-center justify-start">
+      <div className="w-full max-w-[620px] mx-auto bg-white rounded-2xl border border-[#ECE8E1] shadow-sm overflow-hidden flex flex-col mb-10">
+        {/* Optional Header Image */}
+        {form.headerImage && (
+          <div className="w-full aspect-[4/1] max-h-[220px] overflow-hidden relative">
+            <img src={form.headerImage} alt="Form Header" className="w-full h-full object-cover" />
+          </div>
+        )}
 
-      <div className="max-w-3xl mx-auto px-4 relative z-10">
-        <div className="bg-white rounded-b-[24px] shadow-sm border-x border-b border-slate-100 overflow-hidden -mt-1">
-          {/* Progress Bar */}
-          {form.settings?.showProgressBar && form.fields.length > 0 && (
-            <div className="h-1.5 w-full bg-slate-50">
-              <div
-                className="bg-indigo-600 h-full rounded-r-full transition-all duration-700 ease-out shadow-[0_0_10px_rgba(79,70,229,0.4)]"
-                style={{ width: `${(Object.keys(responses).length / form.fields.length) * 100}%` }}
-              />
+        {/* Progress Bar */}
+        {form.settings?.showProgressBar && form.fields.length > 0 && (
+          <div className="h-1.5 w-full bg-[#FAF7F2]">
+            <div
+              className="bg-[#5C4A3E] h-full rounded-r-full transition-all duration-500 shadow-[0_0_8px_rgba(92,74,62,0.3)]"
+              style={{ width: `${(Object.keys(responses).length / form.fields.length) * 100}%` }}
+            />
+          </div>
+        )}
+
+        <div className="p-6 sm:p-8">
+          <h1 className="text-[26px] font-serif font-black text-[#2C2520] mb-2">{form.title}</h1>
+          {form.description && <p className="text-[14px] text-slate-500 mb-6">{form.description}</p>}
+
+          {/* User Status Bar if logged in */}
+          {user && (
+            <div className="mb-5 pb-3 border-b border-[#ECE8E1] flex items-center justify-between text-[11.5px] text-slate-500">
+              <span>Submitting as <strong className="text-[#2C2520]">{user.email}</strong></span>
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('user');
+                  localStorage.setItem('returnUrl', window.location.pathname);
+                  window.location.href = '/login';
+                }}
+                className="text-[#5C4A3E] font-medium hover:underline"
+              >
+                Switch account
+              </button>
             </div>
           )}
 
-          <div className="p-4 sm:p-10 lg:p-12 sm:pt-0">
-            {/* User Status Indicator */}
-            <div className="mb-6 sm:mb-10 p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 sm:justify-between">
-              <div className="flex items-center space-x-3">
-                <div className={`w-2.5 h-2.5 rounded-full ${user ? 'bg-emerald-500 animate-pulse' : 'bg-slate-300'}`}></div>
-                <div className="flex flex-col">
-                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Account</span>
-                  <span className="text-sm font-semibold text-slate-700">
-                    {user ? user.email : 'Anonymous Responder'}
-                  </span>
-                </div>
+          {/* Login Requirement Notice */}
+          {form.settings?.requireLogin && !user && !showLoginRequired && (
+            <div className="mb-6 p-4 bg-[#F5EFE6] border border-[#DDD5C7] rounded-xl flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <AlertCircle className="w-4 h-4 text-[#5C4A3E] shrink-0" />
+                <span className="text-[12.5px] font-semibold text-[#2C2520]">You must be signed in to submit this form.</span>
               </div>
-              {user ? (
-                <button
-                  onClick={() => {
-                    localStorage.removeItem('token');
-                    localStorage.removeItem('user');
-                    localStorage.setItem('returnUrl', window.location.pathname);
-                    window.location.href = '/login';
-                  }}
-                  className="px-4 py-1.5 bg-white border border-slate-200 text-indigo-600 text-[10px] sm:text-xs font-bold rounded-full hover:bg-indigo-50 hover:border-indigo-200 transition-all active:scale-[0.95] shadow-sm uppercase tracking-tight"
-                >
-                  Switch account
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    localStorage.setItem('returnUrl', window.location.pathname);
-                    window.location.href = '/login';
-                  }}
-                  className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-full hover:bg-slate-50 transition-colors"
-                >
-                  Sign in
-                </button>
-              )}
+              <button
+                type="button"
+                onClick={() => {
+                  localStorage.setItem('returnUrl', window.location.pathname);
+                  window.location.href = '/login';
+                }}
+                className="px-3.5 py-1.5 bg-[#5C4A3E] text-white text-[12px] font-bold rounded-lg hover:bg-[#483A30] transition-colors"
+              >
+                Sign In
+              </button>
             </div>
+          )}
 
-            {/* Login Requirement Notice */}
-            {form.settings?.requireLogin && !user && !showLoginRequired && (
-              <div className="mb-10 p-6 bg-amber-50 border border-amber-100 rounded-2xl flex gap-4">
-                <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center flex-shrink-0">
-                  <AlertCircle className="w-6 h-6 text-amber-600" />
-                </div>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {form.fields.map(field => (
+              <div key={field.id} className="space-y-1.5">
+                <label className="block text-[13px] font-bold text-[#2C2520]">
+                  {field.label}
+                  {field.required && <span className="text-[#5C4A3E] ml-1">*</span>}
+                </label>
+                {field.helperText && <p className="text-[11.5px] text-slate-400">{field.helperText}</p>}
                 <div>
-                  <h4 className="font-bold text-amber-900 mb-1">Sign in required</h4>
-                  <p className="text-sm text-amber-700 mb-4">
-                    You must be signed in to submit this form. Your progress will be saved once you log in.
-                  </p>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => {
-                        localStorage.setItem('returnUrl', window.location.pathname);
-                        window.location.href = '/login';
-                      }}
-                      className="px-4 py-2 bg-amber-600 text-white font-bold rounded-xl text-sm hover:bg-amber-700 shadow-sm shadow-amber-200 transition-all"
-                    >
-                      Sign In Now
-                    </button>
-                  </div>
+                  {renderField(field)}
                 </div>
               </div>
-            )}
+            ))}
 
-            <form onSubmit={handleSubmit} className="space-y-10">
-              {form.fields.map((field, idx) => (
-                <div 
-                  key={field.id} 
-                  className="group transition-all duration-300"
-                  style={{ animationDelay: `${idx * 100}ms` }}
-                >
-                  <label className="block text-[15px] font-bold text-slate-800 mb-4 group-focus-within:text-indigo-600 transition-colors">
-                    {field.label}
-                    {field.required && <span className="text-rose-500 ml-1.5">*</span>}
-                  </label>
-                  <div className="relative">
-                    {renderField(field)}
-                  </div>
-                </div>
-              ))}
-
-              <div className="pt-8 border-t border-slate-50">
-                <button
-                  type="submit"
-                  disabled={submitting || (form.settings?.requireLogin && !user)}
-                  className="w-full flex items-center justify-center px-6 sm:px-8 py-3.5 sm:py-4 bg-indigo-600 text-white font-bold rounded-2xl hover:bg-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-200 active:scale-[0.98]"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-white/30 border-t-white mr-3"></div>
-                      Submitting Response...
-                    </>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5 mr-3" />
-                      Submit Form
-                    </>
-                  )}
-                </button>
-                <div className="mt-6 text-center">
-                  <p className="text-xs text-slate-400 font-medium">
-                    Never submit passwords through OORB Forms. 
-                    <a href="#" className="text-indigo-500 ml-1 hover:underline">Report Abuse</a>
-                  </p>
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <div className="mt-12 text-center pb-8 border-t border-slate-200 pt-8">
-          <p className="text-sm font-bold text-slate-400 tracking-wide uppercase">Powered by</p>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
-              <FileText size={16} className="text-white" />
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={submitting || (form.settings?.requireLogin && !user)}
+                className="w-full py-3 px-4 rounded-xl bg-[#5C4A3E] text-white font-bold text-[14px] hover:bg-[#483A30] active:scale-[0.98] transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {submitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white/30 border-t-white mr-2" />
+                    Submitting...
+                  </>
+                ) : (
+                  form.submitButtonText || 'Submit'
+                )}
+              </button>
             </div>
-            <span className="text-xl font-black text-slate-900 tracking-tight">OORB<span className="text-indigo-600">FORMS</span></span>
-          </div>
+          </form>
         </div>
+      </div>
+
+      {/* Subtle branding footer */}
+      <div className="text-center text-[12px] text-slate-400 font-medium">
+        Forms by Gessions
       </div>
 
       {/* Login Required Modal */}
       {showLoginRequired && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="p-6 border-b border-slate-100">
-              <h3 className="text-xl font-bold text-slate-900">Login Required</h3>
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="bg-white rounded-xl border border-[#DDD5C7] shadow-2xl max-w-md w-full overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="p-6 border-b border-[#EDE5D8] bg-[#FAF7F2]">
+              <h3 className="text-xl font-bold text-[#2C2520]">Login Required</h3>
             </div>
             <div className="p-8">
-              <p className="text-slate-600 mb-8 leading-relaxed">
+              <p className="text-slate-600 mb-8 leading-relaxed text-[15px]">
                 This form requires you to be logged in to submit a response. This helps us ensure data integrity and security.
               </p>
               <div className="flex flex-col sm:flex-row gap-3">
@@ -1010,7 +1029,7 @@ const FormRenderer: React.FC = () => {
                     localStorage.setItem('returnUrl', window.location.pathname);
                     window.location.href = '/login';
                   }}
-                  className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all active:scale-[0.98] shadow-md shadow-indigo-100"
+                  className="flex-1 px-6 py-3 bg-[#5C4A3E] text-white font-bold rounded-xl hover:bg-[#483A30] transition-all active:scale-[0.98] shadow-md shadow-[#5C4A3E]/20"
                 >
                   Sign In
                 </button>
@@ -1019,7 +1038,7 @@ const FormRenderer: React.FC = () => {
                     localStorage.setItem('returnUrl', window.location.pathname);
                     window.location.href = '/register';
                   }}
-                  className="flex-1 px-6 py-3 border-2 border-slate-200 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all active:scale-[0.98]"
+                  className="flex-1 px-6 py-3 border border-[#DDD5C7] text-[#2C2520] font-bold rounded-xl hover:bg-[#FAF7F2] transition-all active:scale-[0.98]"
                 >
                   Sign Up
                 </button>

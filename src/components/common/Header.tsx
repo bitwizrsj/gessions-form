@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { User, LogOut, Settings, FileText } from 'lucide-react';
 import AuthModal from '../auth/AuthModal';
 import { authAPI } from '../../services/api';
@@ -58,12 +58,12 @@ const Header: React.FC<HeaderProps> = ({ showAuthButtons = true }) => {
               <div className="w-8 h-8 bg-blue-600 rounded-sm flex items-center justify-center">
                 <FileText className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-gray-900">OORB Forms</span>
+              <span className="text-xl font-bold text-gray-900">Forms by Gessions</span>
             </div>
 
             {/* Navigation */}
             <nav className="hidden md:flex items-center space-x-6">
-              <a href="/oorb-forms" className="text-gray-600 hover:text-gray-900 transition-colors">
+              <a href="/forms-by-gessions" className="text-gray-600 hover:text-gray-900 transition-colors">
                 Dashboard
               </a>
               <a href="#" className="text-gray-600 hover:text-gray-900 transition-colors">

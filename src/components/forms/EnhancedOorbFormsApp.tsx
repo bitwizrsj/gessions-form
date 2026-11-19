@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { LayoutDashboard, BarChart3, Settings, Menu, X, Plus } from 'lucide-react';
 import FormDashboard from './FormDashboard';
@@ -8,26 +8,45 @@ import FormCreationModal from './FormCreationModal';
 import Sidebar from './Sidebar';
 import UserResponses from './UserResponses';
 import UserSettings from '../auth/UserSettings';
+import TemplateLibrary from './TemplateLibrary';
+import IntegrationsPanel from './IntegrationsPanel';
 import toast from 'react-hot-toast';
 import EnhancedFormBuilder from './EnhancedFormBuilder';
 import { formAPI } from '../../services/api';
 
-type View = 'dashboard' | 'builder' | 'responses' | 'settings' | 'my-responses';
+type View = 'dashboard' | 'forms' | 'builder' | 'responses' | 'settings' | 'my-responses' | 'integrations' | 'analytics';
 
-const EnhancedOorbFormsApp: React.FC = () => {
+const EnhancedGESSIONSFormsApp: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const [currentFormId, setCurrentFormId] = useState<string | null>(null);
   const [showFormCreationModal, setShowFormCreationModal] = useState(false);
+  const [showTemplateLibrary, setShowTemplateLibrary] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [sidebarMinimized, setSidebarMinimized] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { formId } = useParams<{ formId?: string }>();
 
   useEffect(() => {
-    const state = location.state as { openFormId?: string };
+    if (formId) {
+      setCurrentFormId(formId);
+      setCurrentView('builder');
+    }
+  }, [formId]);
+
+  useEffect(() => {
+    const state = location.state as { openFormId?: string; view?: View | 'templates' } | null;
     if (state?.openFormId) {
       setCurrentFormId(state.openFormId);
       setCurrentView('builder');
+      window.history.replaceState({}, document.title);
+    } else if (state?.view === 'templates') {
+      setCurrentView('dashboard');
+      setShowTemplateLibrary(true);
+      window.history.replaceState({}, document.title);
+    } else if (state?.view) {
+      setCurrentView(state.view as View);
       window.history.replaceState({}, document.title);
     }
   }, [location]);
@@ -57,9 +76,32 @@ const EnhancedOorbFormsApp: React.FC = () => {
       setCurrentView('builder');
       setShowFormCreationModal(false);
       setMobileSidebarOpen(false);
+      navigate(`/forms/${response.data._id}/edit`);
       toast.success('Form created successfully!');
     } catch {
       toast.error('Failed to create form');
+    }
+  };
+
+  const handleSelectTemplate = async (template: any) => {
+    setShowTemplateLibrary(false);
+    try {
+      const fieldsWithIds = (template.fields || []).map((f: any, i: number) => ({
+        ...f,
+        id: `field_${Date.now()}_${i}`
+      }));
+      const res = await formAPI.createForm({
+        title: template.title,
+        description: template.description,
+        fields: fieldsWithIds,
+        status: 'draft'
+      });
+      setCurrentFormId(res.data._id);
+      setCurrentView('builder');
+      navigate(`/forms/${res.data._id}/edit`);
+      toast.success('Template loaded into editor!');
+    } catch {
+      toast.error('Failed to create form from template');
     }
   };
 
@@ -67,6 +109,7 @@ const EnhancedOorbFormsApp: React.FC = () => {
     setCurrentFormId(formId);
     setCurrentView('builder');
     setMobileSidebarOpen(false);
+    navigate(`/forms/${formId}/edit`);
   };
 
   const handleViewResponses = (formId: string) => {
@@ -78,9 +121,26 @@ const EnhancedOorbFormsApp: React.FC = () => {
   const handleBackToDashboard = () => {
     setCurrentView('dashboard');
     setCurrentFormId(null);
+    navigate('/dashboard');
   };
 
   const handleNavigate = (view: string) => {
+    if (view === 'ai-chat' || view === 'workflows') {
+      navigate('/ai-chat');
+      return;
+    }
+    if (view === 'templates') {
+      setShowTemplateLibrary(true);
+      return;
+    }
+    if (view === 'forms' || view === 'dashboard') {
+      setCurrentView(view as View);
+      setCurrentFormId(null);
+      setMobileSidebarOpen(false);
+      navigate('/dashboard');
+      return;
+    }
+    setCurrentFormId(null);
     setCurrentView(view as View);
     setMobileSidebarOpen(false);
   };
@@ -94,6 +154,8 @@ const EnhancedOorbFormsApp: React.FC = () => {
         <EnhancedFormBuilder
           formId={currentFormId || undefined}
           onBack={handleBackToDashboard}
+          onNavigate={handleNavigate}
+          onViewResponses={handleViewResponses}
         />
         <FormCreationModal
           isOpen={showFormCreationModal}
@@ -121,7 +183,7 @@ const EnhancedOorbFormsApp: React.FC = () => {
   // ── Dashboard layout (with sidebar) ─────────────────────────
   return (
     <>
-      <div className="flex min-h-screen bg-gray-50 relative">
+      <div className="flex min-h-screen bg-[#FAF7F2] relative">
 
         {/* ── DESKTOP SIDEBAR ─────────────────────────────────── */}
         {!isMobile && (
@@ -186,16 +248,26 @@ const EnhancedOorbFormsApp: React.FC = () => {
             </div>
           )}
 
-          {currentView === 'dashboard' ? (
+          {currentView === 'dashboard' || currentView === 'forms' ? (
             <FormDashboard
               onCreateForm={handleCreateForm}
               onEditForm={handleEditForm}
               onViewResponses={handleViewResponses}
             />
-          ) : currentView === 'my-responses' ? (
+          ) : currentView === 'my-responses' || currentView === 'analytics' ? (
             <UserResponses />
-          ) : (
+          ) : currentView === 'integrations' ? (
+            <div className="p-8">
+              <IntegrationsPanel formId="global" />
+            </div>
+          ) : currentView === 'settings' ? (
             <UserSettings />
+          ) : (
+            <FormDashboard
+              onCreateForm={handleCreateForm}
+              onEditForm={handleEditForm}
+              onViewResponses={handleViewResponses}
+            />
           )}
         </div>
 
@@ -232,6 +304,13 @@ const EnhancedOorbFormsApp: React.FC = () => {
         onSubmit={handleFormCreation}
       />
 
+      {showTemplateLibrary && (
+        <TemplateLibrary
+          onSelectTemplate={handleSelectTemplate}
+          onClose={() => setShowTemplateLibrary(false)}
+        />
+      )}
+
       <Toaster
         position="top-right"
         toastOptions={{
@@ -245,4 +324,4 @@ const EnhancedOorbFormsApp: React.FC = () => {
   );
 };
 
-export default EnhancedOorbFormsApp;
+export default EnhancedGESSIONSFormsApp;

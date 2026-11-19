@@ -84,11 +84,11 @@ const QuestionAnswerField: React.FC<QuestionAnswerFieldProps> = ({
   if (isPreview) {
     return (
       <div className="space-y-3">
-        <div className="flex items-start space-x-2 p-3 bg-blue-50 rounded-md">
-          <HelpCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+        <div className="flex items-start space-x-2.5 p-3.5 bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl">
+          <HelpCircle className="w-4 h-4 text-[#5C4A3E] mt-0.5 flex-shrink-0" />
           <div>
-            <p className="text-sm font-medium text-blue-900">Question</p>
-            <p className="text-sm text-blue-800">
+            <p className="text-[12.5px] font-bold text-[#2C2520]">Question</p>
+            <p className="text-[12px] text-slate-500">
               {field.questionType === 'single-choice' ? 'Select one answer' : 'Select all correct answers'}
             </p>
           </div>
@@ -96,16 +96,16 @@ const QuestionAnswerField: React.FC<QuestionAnswerFieldProps> = ({
         
         <div className="space-y-2">
           {(field.questionOptions || []).map((option: QuestionOption) => (
-            <label key={option.id} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-md hover:bg-gray-50 cursor-pointer">
+            <label key={option.id} className="flex items-center space-x-3 p-3 bg-[#FAF7F2] border border-[#E5DFD5] rounded-xl hover:bg-[#F5EFE6] cursor-pointer transition-colors">
               <input
                 type={field.questionType === 'single-choice' ? 'radio' : 'checkbox'}
                 name={field.id}
                 value={option.id}
                 checked={selectedAnswers.includes(option.id)}
                 onChange={() => handleAnswerSelection(option.id)}
-                className="text-blue-600 focus:ring-blue-500"
+                className={`accent-[#5C4A3E] ${field.questionType !== 'single-choice' ? 'rounded' : ''}`}
               />
-              <span className="text-gray-900">{option.text}</span>
+              <span className="text-[13px] text-slate-700 font-medium">{option.text}</span>
             </label>
           ))}
         </div>

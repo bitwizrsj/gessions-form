@@ -138,21 +138,35 @@ router.post('/', async (req, res) => {
     form.completionRate = form.views > 0 ? (form.responses / form.views) * 100 : 0;
     await form.save();
 
-    // ── Email notification to form creator ─────────────────────────────────
+    // ── Email notification to form creator and coworkers ──────────────────────
     if (form.settings?.emailNotifications !== false && process.env.EMAIL_USER) {
       try {
         // Fetch form creator to get their email
         const creator = await User.findById(form.createdBy).select('email name');
-        const recipientEmail = form.settings?.notificationEmail || creator?.email;
+        
+        // Collect all notification recipients (creator + coworker/additional emails)
+        const recipients = new Set();
+        if (creator?.email) {
+          recipients.add(creator.email.toLowerCase().trim());
+        }
+        if (form.settings?.notificationEmail) {
+          form.settings.notificationEmail
+            .split(',')
+            .map(e => e.trim().toLowerCase())
+            .filter(Boolean)
+            .forEach(e => recipients.add(e));
+        }
 
-        if (recipientEmail) {
+        const recipientList = Array.from(recipients);
+
+        if (recipientList.length > 0) {
           const emailContent = responses
             .map(r => `<tr><td style="padding:8px 12px;border-bottom:1px solid #eee;font-weight:600;color:#374151;width:40%">${r.fieldLabel}</td><td style="padding:8px 12px;border-bottom:1px solid #eee;color:#6B7280">${Array.isArray(r.value) ? r.value.join(', ') : r.value || '—'}</td></tr>`)
             .join('');
 
           await transporter.sendMail({
-            from: `"OORB Forms" <${process.env.EMAIL_USER}>`,
-            to: recipientEmail,
+            from: `"Forms by Gessions" <${process.env.EMAIL_USER}>`,
+            to: recipientList.join(', '),
             subject: `📋 New Response: ${form.title}`,
             html: `
               <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff">
@@ -167,11 +181,11 @@ router.post('/', async (req, res) => {
                     <tbody>${emailContent}</tbody>
                   </table>
                   <div style="margin-top:24px;padding:16px;background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px">
-                    <p style="margin:0;font-size:13px;color:#0369A1">View all responses in your <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="color:#0284C7;font-weight:600">OORB Forms dashboard</a>.</p>
+                    <p style="margin:0;font-size:13px;color:#0369A1">View all responses in your <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="color:#0284C7;font-weight:600">Forms by Gessions dashboard</a>.</p>
                   </div>
                 </div>
                 <div style="padding:16px 32px;background:#F9FAFB;border-top:1px solid #E5E7EB;border-radius:0 0 12px 12px">
-                  <p style="margin:0;font-size:12px;color:#9CA3AF">Powered by OORB Forms · <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="color:#6B7280">Unsubscribe</a></p>
+                  <p style="margin:0;font-size:12px;color:#9CA3AF">Powered by Forms by Gessions · <a href="${process.env.FRONTEND_URL || 'http://localhost:5173'}" style="color:#6B7280">Unsubscribe</a></p>
                 </div>
               </div>
             `
@@ -198,7 +212,7 @@ router.post('/', async (req, res) => {
             .join('');
 
           await transporter.sendMail({
-            from: `"OORB Forms" <${process.env.EMAIL_USER}>`,
+            from: `"Forms by Gessions" <${process.env.EMAIL_USER}>`,
             to: recipientEmail,
             subject: `📄 Your Response Copy: ${form.title}`,
             html: `
@@ -219,7 +233,7 @@ router.post('/', async (req, res) => {
                   ` : ''}
                 </div>
                 <div style="padding:16px 32px;background:#F9FAFB;border-top:1px solid #E5E7EB;border-radius:0 0 12px 12px">
-                  <p style="margin:0;font-size:12px;color:#9CA3AF">Powered by OORB Forms · Do not reply to this email.</p>
+                  <p style="margin:0;font-size:12px;color:#9CA3AF">Powered by Forms by Gessions · Do not reply to this email.</p>
                 </div>
               </div>
             `

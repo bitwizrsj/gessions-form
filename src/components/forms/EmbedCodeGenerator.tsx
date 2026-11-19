@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Code, Copy, Eye, Settings, Palette } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -34,11 +34,11 @@ const EmbedCodeGenerator: React.FC<EmbedCodeGeneratorProps> = ({ form, onClose }
 </iframe>`;
 
       case 'react':
-        return `import { OorbForm } from '@oorb/forms-react';
+        return `import { GESSIONSForm } from '@GESSIONS/forms-react';
 
 function MyComponent() {
   return (
-    <OorbForm
+    <GESSIONSForm
       formId="${form.shareUrl}"
       width="${customization.width}"
       height="${customization.height}"
@@ -54,12 +54,12 @@ function MyComponent() {
 }`;
 
       case 'html':
-        return `<!-- OORB Forms Embed -->
-<div id="oorb-form-${form.shareUrl}"></div>
-<script src="https://cdn.oorb.com/forms.js"></script>
+        return `<!-- Forms by Gessions Embed -->
+<div id="GESSIONS-form-${form.shareUrl}"></div>
+<script src="https://cdn.GESSIONS.com/forms.js"></script>
 <script>
-  OorbForms.render('${form.shareUrl}', {
-    container: '#oorb-form-${form.shareUrl}',
+  GESSIONSForms.render('${form.shareUrl}', {
+    container: '#GESSIONS-form-${form.shareUrl}',
     width: '${customization.width}',
     height: '${customization.height}',
     theme: '${customization.theme}',
@@ -237,7 +237,7 @@ function MyComponent() {
                       onChange={(e) => setCustomization(prev => ({ ...prev, showBranding: e.target.checked }))}
                       className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                     />
-                    <span className="text-sm font-medium text-gray-700">Show OORB branding</span>
+                    <span className="text-sm font-medium text-gray-700">Show GESSIONS branding</span>
                   </label>
                 </div>
               </div>
@@ -284,14 +284,14 @@ function MyComponent() {
               {embedType === 'react' && (
                 <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-sm">
                   <h4 className="font-medium text-blue-900 mb-2">Installation</h4>
-                  <code className="text-sm text-blue-800">npm install @oorb/forms-react</code>
+                  <code className="text-sm text-blue-800">npm install @GESSIONS/forms-react</code>
                 </div>
               )}
 
               {embedType === 'html' && (
                 <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-sm">
                   <h4 className="font-medium text-green-900 mb-2">CDN Link</h4>
-                  <code className="text-sm text-green-800">https://cdn.oorb.com/forms.js</code>
+                  <code className="text-sm text-green-800">https://cdn.GESSIONS.com/forms.js</code>
                 </div>
               )}
             </div>

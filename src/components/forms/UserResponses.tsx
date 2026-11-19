@@ -52,8 +52,35 @@ const UserResponses: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      <div className="p-6 max-w-5xl mx-auto space-y-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 animate-pulse">
+          <div className="space-y-2">
+            <div className="h-7 w-44 bg-slate-200 rounded-lg" />
+            <div className="h-4 w-64 bg-slate-200 rounded" />
+          </div>
+          <div className="h-10 w-full md:w-64 bg-slate-200 rounded-xl" />
+        </div>
+
+        <div className="grid gap-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div
+              key={i}
+              className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between gap-4 animate-pulse"
+            >
+              <div className="flex items-center gap-4 flex-1">
+                <div className="w-12 h-12 rounded-xl bg-slate-100 shrink-0" />
+                <div className="space-y-2 flex-1 max-w-sm">
+                  <div className="h-4 bg-slate-200 rounded w-3/4" />
+                  <div className="flex gap-4">
+                    <div className="h-3 bg-slate-100 rounded w-24" />
+                    <div className="h-3 bg-slate-100 rounded w-20" />
+                  </div>
+                </div>
+              </div>
+              <div className="h-8 w-24 bg-slate-100 rounded-xl shrink-0" />
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -73,7 +100,7 @@ const UserResponses: React.FC = () => {
             placeholder="Search responses..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none w-full md:w-64 transition-all"
+            className="pl-9 pr-4 py-2 bg-white border border-[#E5DFD5] rounded-xl text-sm focus:ring-2 focus:ring-[#5C4A3E]/20 focus:border-[#5C4A3E] outline-none w-full md:w-64 transition-all"
           />
         </div>
       </div>
@@ -83,11 +110,11 @@ const UserResponses: React.FC = () => {
           {filteredResponses.map((response) => (
             <div 
               key={response._id}
-              className="bg-white border border-slate-200 rounded-2xl p-4 hover:border-indigo-200 hover:shadow-md transition-all group cursor-pointer"
+              className="bg-white border border-[#EAE4DC] rounded-2xl p-4 hover:border-[#5C4A3E]/40 hover:shadow-md transition-all group cursor-pointer"
             >
               <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
-                  <div className="w-12 h-12 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                  <div className="w-12 h-12 rounded-xl bg-[#F5EFE6] flex items-center justify-center text-[#5C4A3E] flex-shrink-0 group-hover:bg-[#5C4A3E] group-hover:text-white transition-colors">
                     <FileText size={20} />
                   </div>
                   
@@ -131,7 +158,7 @@ const UserResponses: React.FC = () => {
                 <div className="flex items-center gap-2 mt-2 sm:mt-0 sm:ml-auto w-full sm:w-auto justify-end border-t sm:border-0 border-slate-100 pt-3 sm:pt-0">
                   <button
                     onClick={() => setSelectedResponse(response)}
-                    className="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 text-indigo-600 bg-indigo-50/50 hover:bg-indigo-50 rounded-lg text-sm font-bold transition-colors"
+                    className="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 text-[#5C4A3E] bg-[#F5EFE6] hover:bg-[#EDE5D8] rounded-lg text-sm font-bold transition-colors"
                   >
                     <Eye size={16} />
                     See
@@ -139,7 +166,7 @@ const UserResponses: React.FC = () => {
                   {response.isEditable && response.shareUrl && (
                     <button
                       onClick={() => window.open(`/form/${response.shareUrl}?edit=${response._id}`, '_self')}
-                      className="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-sm font-bold shadow-sm transition-colors"
+                      className="flex-1 sm:flex-none flex justify-center items-center gap-1.5 px-3 py-2 sm:py-1.5 bg-[#5C4A3E] hover:bg-[#483A30] text-white rounded-lg text-sm font-bold shadow-sm transition-colors"
                     >
                       <Edit3 size={16} />
                       Edit
